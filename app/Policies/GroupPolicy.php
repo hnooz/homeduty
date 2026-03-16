@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\GroupMemberRole;
 use App\Enums\HomeDutyPermission;
 use App\Models\Group;
 use App\Models\User;
@@ -30,7 +31,8 @@ class GroupPolicy
 
     public function manageMembers(User $user, Group $group): bool
     {
-        return $group->owner_id === $user->id && $user->can(HomeDutyPermission::ManageHomeGroupMembers->value);
+        return $this->isOwnerOrAdmin($user, $group)
+            && $user->can(HomeDutyPermission::ManageHomeGroupMembers->value);
     }
 
     public function update(User $user, Group $group): bool
@@ -51,5 +53,16 @@ class GroupPolicy
     public function forceDelete(User $user, Group $group): bool
     {
         return false;
+    }
+
+    private function isOwnerOrAdmin(User $user, Group $group): bool
+    {
+        $isOwner = $group->owner_id === $user->id;
+        $isGroupAdmin = $user->groupMemberships()
+            ->where('group_id', $group->id)
+            ->where('role', GroupMemberRole::Admin->value)
+            ->exists();
+
+        return $isOwner || $isGroupAdmin;
     }
 }
