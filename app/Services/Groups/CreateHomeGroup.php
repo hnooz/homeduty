@@ -2,6 +2,7 @@
 
 namespace App\Services\Groups;
 
+use App\Enums\GroupMemberRole;
 use App\Models\Group;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,7 @@ class CreateHomeGroup
 
             $group->memberships()->create([
                 'user_id' => $owner->id,
-                'role' => 'admin',
+                'role' => GroupMemberRole::Admin,
             ]);
 
             return $group;

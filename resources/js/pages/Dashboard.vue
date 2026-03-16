@@ -5,14 +5,20 @@ import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import GroupController from '@/actions/App/Http/Controllers/GroupController';
+import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
     canCreateHomeGroup: boolean;
+    canManageHomeGroupMembers: boolean;
+    canViewHomeGroupMembers: boolean;
     homeGroup: {
         id: number;
         name: string;
+        memberCount: number;
+        pendingInvitationsCount: number;
+        isOwner: boolean;
     } | null;
     status?: string;
     homeGroupName?: string;
@@ -30,6 +36,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 const hasHomeGroup = computed(() => props.homeGroup !== null);
+const homeGroupId = computed(() => props.homeGroup?.id ?? 0);
 
 const nextSteps = computed(() => [
     {
@@ -48,6 +55,13 @@ const nextSteps = computed(() => [
             ? 'Your household is ready for member invitations and shared duty planning.'
             : 'Create your first shared group to anchor member invitations and duty scheduling.',
         value: hasHomeGroup.value ? props.homeGroup?.name : props.canCreateHomeGroup ? 'Ready to create' : 'Restricted',
+    },
+    {
+        title: 'Member roster',
+        description: hasHomeGroup.value
+            ? 'Track active members and pending invitations from one place.'
+            : 'Create your Home Group before inviting or managing members.',
+        value: hasHomeGroup.value ? `${props.homeGroup?.memberCount} active` : 'Unavailable',
     },
 ]);
 </script>
@@ -69,7 +83,7 @@ const nextSteps = computed(() => [
                 </div>
             </section>
 
-            <section class="grid gap-4 md:grid-cols-3">
+            <section class="grid gap-4 md:grid-cols-4">
                 <article
                     v-for="step in nextSteps"
                     :key="step.title"
@@ -91,11 +105,11 @@ const nextSteps = computed(() => [
                 <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
                         <h2 class="text-lg font-semibold text-foreground">
-                            {{ hasHomeGroup ? 'Home Group created' : 'Create your first Home Group' }}
+                            {{ hasHomeGroup ? 'Home Group ready' : 'Create your first Home Group' }}
                         </h2>
                         <p class="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                             {{ hasHomeGroup
-                                ? 'Your admin account now owns the household workspace. The next feature will add invitations and member management.'
+                                ? 'Your household workspace is active. Feature 3 adds invitation tracking, role updates, and member roster management.'
                                 : 'This creates the shared household workspace, sets you as the owner, and adds you as the first admin member.' }}
                         </p>
                         <p
@@ -106,9 +120,17 @@ const nextSteps = computed(() => [
                         </p>
                     </div>
 
-                    <Button v-if="canCreateHomeGroup" as-child>
-                        <Link :href="GroupController.create()">Create Home Group</Link>
-                    </Button>
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <Button v-if="canCreateHomeGroup" as-child>
+                            <Link :href="GroupController.create()">Create Home Group</Link>
+                        </Button>
+
+                        <Button v-if="hasHomeGroup && canViewHomeGroupMembers" variant="outline" as-child>
+                            <Link :href="GroupMemberController.index(homeGroupId)">
+                                {{ canManageHomeGroupMembers ? 'Manage members' : 'View members' }}
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
                 <p class="mt-4 text-sm font-medium text-foreground">
@@ -122,6 +144,12 @@ const nextSteps = computed(() => [
                 </p>
                 <p class="mt-2 text-sm text-muted-foreground">
                     {{ hasHomeGroup ? `Current group: ${props.homeGroup?.name}` : 'No home group created yet.' }}
+                </p>
+                <p v-if="hasHomeGroup" class="text-sm text-muted-foreground">
+                    {{ props.homeGroup?.memberCount }} active members, {{ props.homeGroup?.pendingInvitationsCount }} pending invitations.
+                </p>
+                <p v-if="hasHomeGroup && props.homeGroup?.isOwner" class="text-sm text-muted-foreground">
+                    You are the owner of this Home Group.
                 </p>
             </section>
         </div>

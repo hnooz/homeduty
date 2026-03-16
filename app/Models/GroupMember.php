@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GroupMemberRole;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,6 +13,16 @@ class GroupMember extends Model
         'user_id',
         'role',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'role' => GroupMemberRole::class,
+        ];
+    }
 
     public function group(): BelongsTo
     {

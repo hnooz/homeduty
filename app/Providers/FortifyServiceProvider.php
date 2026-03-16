@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\GroupInvitation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -66,7 +67,29 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/Register'));
+        Fortify::registerView(function (Request $request) {
+            $invitation = null;
+
+            if ($request->filled('invitation')) {
+                $groupInvitation = GroupInvitation::query()
+                    ->pending()
+                    ->where('token', $request->string('invitation')->toString())
+                    ->first();
+
+                if ($groupInvitation instanceof GroupInvitation) {
+                    $invitation = [
+                        'token' => $groupInvitation->token,
+                        'email' => $groupInvitation->email,
+                        'groupName' => $groupInvitation->group->name,
+                        'roleLabel' => $groupInvitation->role->label(),
+                    ];
+                }
+            }
+
+            return Inertia::render('auth/Register', [
+                'invitation' => $invitation,
+            ]);
+        });
 
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
 

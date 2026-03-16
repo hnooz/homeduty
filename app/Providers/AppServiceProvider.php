@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Services\Roles\SyncHomeDutyAuthorization;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->syncAuthorization();
     }
 
     /**
@@ -46,5 +49,14 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+    }
+
+    protected function syncAuthorization(): void
+    {
+        if (! Schema::hasTable('roles') || ! Schema::hasTable('permissions')) {
+            return;
+        }
+
+        $this->app->make(SyncHomeDutyAuthorization::class)->handle();
     }
 }
