@@ -141,6 +141,58 @@ it('prevents non-owners from inviting additional members', function () {
     ])->assertForbidden();
 });
 
+it('allows an invited admin to manage members after accepting the invitation', function () {
+    Notification::fake();
+
+    /** @var User $owner */
+    $owner = User::factory()->createOne();
+    $group = createOwnedGroupFor($owner);
+
+    /** @var User $admin */
+    $admin = User::factory()->member()->createOne([
+        'email' => 'admin@example.com',
+    ]);
+
+    $invitation = GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => $admin->email,
+        'role' => GroupMemberRole::Admin,
+    ]);
+
+    actingAs($admin);
+
+    post(route('group-invitations.accept', $invitation))
+        ->assertRedirect(route('dashboard'));
+
+    post(route('groups.invitations.store', $group), [
+        'name' => 'Jordan Tate',
+        'email' => 'jordan@example.com',
+        'role' => GroupMemberRole::Member->value,
+    ])->assertRedirect(route('groups.members.index', $group));
+
+    $member = User::factory()->member()->createOne();
+
+    /** @var GroupMember $membership */
+    $membership = GroupMember::query()->create([
+        'group_id' => $group->id,
+        'user_id' => $member->id,
+        'role' => GroupMemberRole::Member,
+    ]);
+
+    patch(route('groups.members.update', [$group, $membership]), [
+        'role' => GroupMemberRole::Admin->value,
+    ])->assertRedirect(route('groups.members.index', $group));
+
+    expect($membership->fresh()->role)->toBe(GroupMemberRole::Admin);
+
+    delete(route('groups.members.destroy', [$group, $membership]))
+        ->assertRedirect(route('groups.members.index', $group));
+
+    expect(GroupMember::query()->whereKey($membership->id)->exists())->toBeFalse();
+    expect(GroupInvitation::query()->where('email', 'jordan@example.com')->exists())->toBeTrue();
+});
+
 it('allows an owner to update and remove a group member', function () {
     /** @var User $owner */
     $owner = User::factory()->createOne();
