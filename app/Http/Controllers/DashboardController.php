@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\GroupInvitation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,6 +14,16 @@ class DashboardController extends Controller
     {
         $user = $request->user()?->loadMissing(['ownedGroup', 'groupMemberships.group']);
         $activeGroup = $user?->ownedGroup ?? $user?->groupMemberships->first()?->group;
+        $pendingInvitation = null;
+
+        if ($user && ! $activeGroup) {
+            $pendingInvitation = GroupInvitation::query()
+                ->with('group')
+                ->pending()
+                ->where('email', $user->email)
+                ->latest()
+                ->first();
+        }
 
         $activeGroup?->loadCount([
             'memberships as members_count',
@@ -34,6 +45,15 @@ class DashboardController extends Controller
                     'pendingInvitationsCount' => $activeGroup->pending_invitations_count,
                     'dutiesCount' => $activeGroup->duties_count,
                     'isOwner' => $user?->ownedGroup?->is($activeGroup) ?? false,
+                ]
+                : null,
+            'pendingInvitation' => $pendingInvitation
+                ? [
+                    'token' => $pendingInvitation->token,
+                    'groupName' => $pendingInvitation->group->name,
+                    'email' => $pendingInvitation->email,
+                    'roleLabel' => $pendingInvitation->role->label(),
+                    'expiresAt' => $pendingInvitation->expires_at?->toIso8601String(),
                 ]
                 : null,
             'status' => $request->session()->get('status'),

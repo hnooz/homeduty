@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Enums\GroupMemberRole;
 use App\Models\Group;
+use App\Models\GroupInvitation;
 use App\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,6 +44,7 @@ class DashboardTest extends TestCase
                 ->component('Dashboard')
                 ->where('canCreateHomeGroup', true)
                 ->where('canViewHomeGroupDuties', false)
+                ->where('pendingInvitation', null)
             );
     }
 
@@ -58,6 +61,7 @@ class DashboardTest extends TestCase
                 ->component('Dashboard')
                 ->where('canCreateHomeGroup', false)
                 ->where('canViewHomeGroupDuties', false)
+                ->where('pendingInvitation', null)
             );
     }
 
@@ -82,7 +86,43 @@ class DashboardTest extends TestCase
                 ->where('canViewHomeGroupDuties', true)
                 ->where('canManageHomeGroupDuties', true)
                 ->where('homeGroup.dutiesCount', 0)
+                ->where('pendingInvitation', null)
                 ->where('homeGroup.name', 'Flat 4A')
+            );
+    }
+
+    public function test_dashboard_shows_a_pending_invitation_for_an_invited_user_without_a_group(): void
+    {
+        $owner = $this->makeUser();
+
+        $group = Group::factory()->create([
+            'owner_id' => $owner->id,
+            'name' => 'Harbor House',
+        ]);
+
+        $invitee = $this->makeUser(isGroupAdmin: false);
+
+        GroupInvitation::query()->create([
+            'group_id' => $group->id,
+            'invited_by_user_id' => $owner->id,
+            'name' => $invitee->name,
+            'email' => $invitee->email,
+            'phone_number' => $invitee->phone_number,
+            'role' => GroupMemberRole::Member,
+            'token' => 'dashboard-invitation-token',
+            'expires_at' => now()->addDays(7),
+        ]);
+
+        $this->actingAs($invitee);
+
+        $this->get(route('dashboard'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page): AssertableInertia => $page
+                ->component('Dashboard')
+                ->where('pendingInvitation.token', 'dashboard-invitation-token')
+                ->where('pendingInvitation.groupName', 'Harbor House')
+                ->where('pendingInvitation.roleLabel', 'Member')
+                ->where('homeGroup', null)
             );
     }
 }

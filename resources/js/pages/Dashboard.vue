@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import GroupController from '@/actions/App/Http/Controllers/GroupController';
 import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
+import GroupInvitationController from '@/actions/App/Http/Controllers/GroupInvitationController';
 import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 
@@ -23,6 +27,13 @@ type Props = {
         memberCount: number;
         pendingInvitationsCount: number;
         isOwner: boolean;
+    } | null;
+    pendingInvitation: {
+        token: string;
+        groupName: string;
+        email: string;
+        roleLabel: string;
+        expiresAt: string | null;
     } | null;
     status?: string;
     homeGroupName?: string;
@@ -111,6 +122,44 @@ const nextSteps = computed(() => [
                     </p>
                 </article>
             </section>
+
+            <Card v-if="pendingInvitation" class="rounded-3xl border-border/70 shadow-sm">
+                <CardHeader>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <CardTitle>Pending invitation</CardTitle>
+                        <Badge variant="outline">{{ pendingInvitation.roleLabel }}</Badge>
+                    </div>
+                    <CardDescription>
+                        You have a Home Group invitation waiting and can accept it directly from the dashboard.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div class="space-y-2 text-sm text-muted-foreground">
+                        <p>
+                            Group: <span class="font-medium text-foreground">{{ pendingInvitation.groupName }}</span>
+                        </p>
+                        <p>
+                            Invited email: <span class="font-medium text-foreground">{{ pendingInvitation.email }}</span>
+                        </p>
+                        <p>
+                            Expires {{ pendingInvitation.expiresAt ? new Date(pendingInvitation.expiresAt).toLocaleDateString() : 'soon' }}
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <Form v-bind="GroupInvitationController.accept.form(pendingInvitation.token)" v-slot="{ processing }">
+                            <Button type="submit" :disabled="processing">
+                                <Spinner v-if="processing" />
+                                Accept invitation
+                            </Button>
+                        </Form>
+
+                        <Button variant="outline" as-child>
+                            <Link :href="GroupInvitationController.show(pendingInvitation.token)">Review invitation</Link>
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
 
             <section class="rounded-3xl border border-dashed border-border/80 bg-muted/30 p-6">
                 <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
