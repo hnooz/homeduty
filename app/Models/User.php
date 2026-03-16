@@ -41,6 +41,11 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function assignedDuties(): HasMany
+    {
+        return $this->hasMany(Duty::class, 'assigned_user_id');
+    }
+
     public function hasHomeGroupAdminRole(): bool
     {
         return $this->hasRole(HomeDutyRole::GroupAdmin);

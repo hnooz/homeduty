@@ -5,15 +5,19 @@ import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import GroupController from '@/actions/App/Http/Controllers/GroupController';
+import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
 import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
     canCreateHomeGroup: boolean;
+    canManageHomeGroupDuties: boolean;
     canManageHomeGroupMembers: boolean;
+    canViewHomeGroupDuties: boolean;
     canViewHomeGroupMembers: boolean;
     homeGroup: {
+        dutiesCount: number;
         id: number;
         name: string;
         memberCount: number;
@@ -63,6 +67,13 @@ const nextSteps = computed(() => [
             : 'Create your Home Group before inviting or managing members.',
         value: hasHomeGroup.value ? `${props.homeGroup?.memberCount} active` : 'Unavailable',
     },
+    {
+        title: 'Duty plan',
+        description: hasHomeGroup.value
+            ? 'Build the recurring household duties list and assign each item to the right person.'
+            : 'A Home Group is required before you can plan shared duties.',
+        value: hasHomeGroup.value ? `${props.homeGroup?.dutiesCount} planned` : 'Unavailable',
+    },
 ]);
 </script>
 
@@ -109,7 +120,7 @@ const nextSteps = computed(() => [
                         </h2>
                         <p class="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                             {{ hasHomeGroup
-                                ? 'Your household workspace is active. Feature 3 adds invitation tracking, role updates, and member roster management.'
+                                ? 'Your household workspace is active. Feature 4 starts the shared duty planner with recurring assignments for the group.'
                                 : 'This creates the shared household workspace, sets you as the owner, and adds you as the first admin member.' }}
                         </p>
                         <p
@@ -130,6 +141,12 @@ const nextSteps = computed(() => [
                                 {{ canManageHomeGroupMembers ? 'Manage members' : 'View members' }}
                             </Link>
                         </Button>
+
+                        <Button v-if="hasHomeGroup && canViewHomeGroupDuties" variant="outline" as-child>
+                            <Link :href="GroupDutyController.index(homeGroupId)">
+                                {{ canManageHomeGroupDuties ? 'Plan duties' : 'View duties' }}
+                            </Link>
+                        </Button>
                     </div>
                 </div>
 
@@ -147,6 +164,9 @@ const nextSteps = computed(() => [
                 </p>
                 <p v-if="hasHomeGroup" class="text-sm text-muted-foreground">
                     {{ props.homeGroup?.memberCount }} active members, {{ props.homeGroup?.pendingInvitationsCount }} pending invitations.
+                </p>
+                <p v-if="hasHomeGroup" class="text-sm text-muted-foreground">
+                    {{ props.homeGroup?.dutiesCount }} duties currently planned.
                 </p>
                 <p v-if="hasHomeGroup && props.homeGroup?.isOwner" class="text-sm text-muted-foreground">
                     You are the owner of this Home Group.

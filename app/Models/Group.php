@@ -39,6 +39,11 @@ class Group extends Model
         return $this->hasMany(GroupInvitation::class);
     }
 
+    public function duties(): HasMany
+    {
+        return $this->hasMany(Duty::class);
+    }
+
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_members')

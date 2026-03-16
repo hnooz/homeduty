@@ -35,6 +35,17 @@ class GroupPolicy
             && $user->can(HomeDutyPermission::ManageHomeGroupMembers->value);
     }
 
+    public function viewDuties(User $user, Group $group): bool
+    {
+        return $this->view($user, $group);
+    }
+
+    public function manageDuties(User $user, Group $group): bool
+    {
+        return $this->isOwnerOrAdmin($user, $group)
+            && $user->can(HomeDutyPermission::ManageHomeGroupDuties->value);
+    }
+
     public function update(User $user, Group $group): bool
     {
         return $group->owner_id === $user->id;
