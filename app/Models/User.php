@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\HomeDutyRole;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,11 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     protected static function newFactory(): UserFactory
     {
@@ -37,6 +39,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Group::class, 'group_members')
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    public function hasHomeGroupAdminRole(): bool
+    {
+        return $this->hasRole(HomeDutyRole::GroupAdmin);
     }
 
     /**

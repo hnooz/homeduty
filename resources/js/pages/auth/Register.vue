@@ -8,8 +8,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
+import { login, register } from '@/routes';
 import { store } from '@/routes/register';
+
+type Props = {
+    invitation?: {
+        token: string;
+        email: string;
+        groupName: string;
+        roleLabel: string;
+    } | null;
+};
+
+const props = defineProps<Props>();
 </script>
 
 <template>
@@ -27,8 +38,20 @@ import { store } from '@/routes/register';
         >
             <div class="grid gap-6">
                 <div class="rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground shadow-sm">
-                    You will be registered as the first Home Group admin and can create your household after signing in.
+                    <template v-if="props.invitation">
+                        You are joining {{ props.invitation.groupName }} as a {{ props.invitation.roleLabel.toLowerCase() }}. Finish registration with the invited email to accept access automatically.
+                    </template>
+                    <template v-else>
+                        You will be registered as the first Home Group owner and can create your household after signing in.
+                    </template>
                 </div>
+
+                <input
+                    v-if="props.invitation"
+                    type="hidden"
+                    name="invitation_token"
+                    :value="props.invitation.token"
+                />
 
                 <div class="grid gap-2">
                     <Label for="name">Name</Label>
@@ -54,6 +77,7 @@ import { store } from '@/routes/register';
                         :tabindex="2"
                         autocomplete="email"
                         name="email"
+                        :default-value="props.invitation?.email"
                         placeholder="email@example.com"
                     />
                     <InputError :message="errors.email" />
@@ -114,7 +138,7 @@ import { store } from '@/routes/register';
             <div class="text-center text-sm text-muted-foreground">
                 Already have an account?
                 <TextLink
-                    :href="login()"
+                    :href="props.invitation ? login({ query: { redirect: register.url({ query: { invitation: props.invitation.token } }) } }) : login()"
                     class="underline underline-offset-4"
                     :tabindex="7"
                     >Log in</TextLink

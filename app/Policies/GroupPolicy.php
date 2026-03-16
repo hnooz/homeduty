@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\HomeDutyPermission;
 use App\Models\Group;
 use App\Models\User;
 
@@ -19,7 +20,17 @@ class GroupPolicy
 
     public function create(User $user): bool
     {
-        return $user->is_group_admin && ! $user->ownedGroup()->exists();
+        return $user->can(HomeDutyPermission::CreateHomeGroup->value) && ! $user->ownedGroup()->exists();
+    }
+
+    public function viewMembers(User $user, Group $group): bool
+    {
+        return $this->view($user, $group);
+    }
+
+    public function manageMembers(User $user, Group $group): bool
+    {
+        return $group->owner_id === $user->id && $user->can(HomeDutyPermission::ManageHomeGroupMembers->value);
     }
 
     public function update(User $user, Group $group): bool

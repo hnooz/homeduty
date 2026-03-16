@@ -2,9 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Enums\HomeDutyRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -16,6 +18,19 @@ class UserFactory extends Factory
      * The current password being used by the factory.
      */
     protected static ?string $password;
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            if (! Schema::hasTable('roles')) {
+                return;
+            }
+
+            $user->syncRoles($user->is_group_admin
+                ? HomeDutyRole::GroupOwner
+                : HomeDutyRole::GroupMember);
+        });
+    }
 
     /**
      * Define the model's default state.
