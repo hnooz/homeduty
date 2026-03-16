@@ -16,6 +16,7 @@ class SyncHomeDutyAuthorization
 
         $createHomeGroup = Permission::findOrCreate(HomeDutyPermission::CreateHomeGroup->value, 'web');
         $manageHomeGroupMembers = Permission::findOrCreate(HomeDutyPermission::ManageHomeGroupMembers->value, 'web');
+        $manageHomeGroupDuties = Permission::findOrCreate(HomeDutyPermission::ManageHomeGroupDuties->value, 'web');
 
         $groupOwner = Role::findOrCreate(HomeDutyRole::GroupOwner->value, 'web');
         $groupAdmin = Role::findOrCreate(HomeDutyRole::GroupAdmin->value, 'web');
@@ -24,10 +25,12 @@ class SyncHomeDutyAuthorization
         $groupOwner->syncPermissions([
             $createHomeGroup,
             $manageHomeGroupMembers,
+            $manageHomeGroupDuties,
         ]);
 
         $groupAdmin->syncPermissions([
             $manageHomeGroupMembers,
+            $manageHomeGroupDuties,
         ]);
 
         $groupMember->syncPermissions([]);

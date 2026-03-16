@@ -6,4 +6,5 @@ enum HomeDutyPermission: string
 {
     case CreateHomeGroup = 'create-home-group';
     case ManageHomeGroupMembers = 'manage-home-group-members';
+    case ManageHomeGroupDuties = 'manage-home-group-duties';
 }

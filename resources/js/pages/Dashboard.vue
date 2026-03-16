@@ -1,24 +1,39 @@
 <script setup lang="ts">
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import GroupController from '@/actions/App/Http/Controllers/GroupController';
+import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
+import GroupInvitationController from '@/actions/App/Http/Controllers/GroupInvitationController';
 import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
     canCreateHomeGroup: boolean;
+    canManageHomeGroupDuties: boolean;
     canManageHomeGroupMembers: boolean;
+    canViewHomeGroupDuties: boolean;
     canViewHomeGroupMembers: boolean;
     homeGroup: {
+        dutiesCount: number;
         id: number;
         name: string;
         memberCount: number;
         pendingInvitationsCount: number;
         isOwner: boolean;
+    } | null;
+    pendingInvitation: {
+        token: string;
+        groupName: string;
+        email: string;
+        roleLabel: string;
+        expiresAt: string | null;
     } | null;
     status?: string;
     homeGroupName?: string;
@@ -63,6 +78,13 @@ const nextSteps = computed(() => [
             : 'Create your Home Group before inviting or managing members.',
         value: hasHomeGroup.value ? `${props.homeGroup?.memberCount} active` : 'Unavailable',
     },
+    {
+        title: 'Duty plan',
+        description: hasHomeGroup.value
+            ? 'Build the recurring household duties list and assign each item to the right person.'
+            : 'A Home Group is required before you can plan shared duties.',
+        value: hasHomeGroup.value ? `${props.homeGroup?.dutiesCount} planned` : 'Unavailable',
+    },
 ]);
 </script>
 
@@ -101,6 +123,44 @@ const nextSteps = computed(() => [
                 </article>
             </section>
 
+            <Card v-if="pendingInvitation" class="rounded-3xl border-border/70 shadow-sm">
+                <CardHeader>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <CardTitle>Pending invitation</CardTitle>
+                        <Badge variant="outline">{{ pendingInvitation.roleLabel }}</Badge>
+                    </div>
+                    <CardDescription>
+                        You have a Home Group invitation waiting and can accept it directly from the dashboard.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div class="space-y-2 text-sm text-muted-foreground">
+                        <p>
+                            Group: <span class="font-medium text-foreground">{{ pendingInvitation.groupName }}</span>
+                        </p>
+                        <p>
+                            Invited email: <span class="font-medium text-foreground">{{ pendingInvitation.email }}</span>
+                        </p>
+                        <p>
+                            Expires {{ pendingInvitation.expiresAt ? new Date(pendingInvitation.expiresAt).toLocaleDateString() : 'soon' }}
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <Form v-bind="GroupInvitationController.accept.form(pendingInvitation.token)" v-slot="{ processing }">
+                            <Button type="submit" :disabled="processing">
+                                <Spinner v-if="processing" />
+                                Accept invitation
+                            </Button>
+                        </Form>
+
+                        <Button variant="outline" as-child>
+                            <Link :href="GroupInvitationController.show(pendingInvitation.token)">Review invitation</Link>
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
             <section class="rounded-3xl border border-dashed border-border/80 bg-muted/30 p-6">
                 <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
@@ -109,7 +169,7 @@ const nextSteps = computed(() => [
                         </h2>
                         <p class="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                             {{ hasHomeGroup
-                                ? 'Your household workspace is active. Feature 3 adds invitation tracking, role updates, and member roster management.'
+                                ? 'Your household workspace is active. Feature 4 starts the shared duty planner with recurring assignments for the group.'
                                 : 'This creates the shared household workspace, sets you as the owner, and adds you as the first admin member.' }}
                         </p>
                         <p
@@ -130,6 +190,12 @@ const nextSteps = computed(() => [
                                 {{ canManageHomeGroupMembers ? 'Manage members' : 'View members' }}
                             </Link>
                         </Button>
+
+                        <Button v-if="hasHomeGroup && canViewHomeGroupDuties" variant="outline" as-child>
+                            <Link :href="GroupDutyController.index(homeGroupId)">
+                                {{ canManageHomeGroupDuties ? 'Plan duties' : 'View duties' }}
+                            </Link>
+                        </Button>
                     </div>
                 </div>
 
@@ -147,6 +213,9 @@ const nextSteps = computed(() => [
                 </p>
                 <p v-if="hasHomeGroup" class="text-sm text-muted-foreground">
                     {{ props.homeGroup?.memberCount }} active members, {{ props.homeGroup?.pendingInvitationsCount }} pending invitations.
+                </p>
+                <p v-if="hasHomeGroup" class="text-sm text-muted-foreground">
+                    {{ props.homeGroup?.dutiesCount }} duties currently planned.
                 </p>
                 <p v-if="hasHomeGroup && props.homeGroup?.isOwner" class="text-sm text-muted-foreground">
                     You are the owner of this Home Group.
