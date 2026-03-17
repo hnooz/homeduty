@@ -217,7 +217,6 @@ const currentUser = computed(() => page.props.auth.user);
 
                                     <div v-if="canManageMembers" class="flex flex-col gap-3 md:items-end">
                                         <Form
-                                            v-if="invitation.hasRegisteredUser"
                                             v-bind="GroupInvitationController.acceptDirect.form({ group: group.id, groupInvitation: invitation.token })"
                                             v-slot="{ processing: accepting }"
                                         >
@@ -231,7 +230,7 @@ const currentUser = computed(() => page.props.auth.user);
                                             {{ invitation.registeredUserName }} already has an account and can be added immediately.
                                         </p>
                                         <p v-else class="text-xs text-muted-foreground md:text-right">
-                                            Waiting for this person to register or sign in before acceptance.
+                                            An account will be created and a password reset link will be sent to {{ invitation.email }}.
                                         </p>
 
                                         <Form

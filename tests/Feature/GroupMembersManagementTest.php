@@ -8,11 +8,14 @@ use App\Models\GroupMember;
 use App\Models\User;
 use App\Notifications\HomeGroupInvitationNotification;
 use App\Services\Groups\CreateHomeGroup;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\delete;
+use function Pest\Laravel\get;
 use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
@@ -238,6 +241,117 @@ it('allows a group admin to directly accept a registered pending member invitati
 
     expect($memberInvitation->fresh()->accepted_by_user_id)->toBe($invitee->id)
         ->and($invitee->fresh()->hasRole(HomeDutyRole::GroupMember))->toBeTrue();
+});
+
+it('creates an account and sends a password reset link when directly accepting an unregistered invitation', function (): void {
+    Notification::fake();
+
+    /** @var User $owner */
+    $owner = User::factory()->createOne();
+    $group = createOwnedGroupFor($owner);
+
+    /** @var User $admin */
+    $admin = User::factory()->member()->createOne([
+        'email' => 'admin-creates@example.com',
+    ]);
+
+    $adminInvitation = GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => $admin->email,
+        'role' => GroupMemberRole::Admin,
+    ]);
+
+    actingAs($admin);
+
+    post(route('group-invitations.accept', $adminInvitation))
+        ->assertRedirect(route('dashboard'));
+
+    $memberInvitation = GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => 'brand-new-member@example.com',
+        'name' => 'Brand New Member',
+        'phone_number' => '+15559998888',
+        'role' => GroupMemberRole::Member,
+    ]);
+
+    post(route('groups.invitations.accept-direct', [$group, $memberInvitation]))
+        ->assertRedirect(route('groups.members.index', $group));
+
+    $createdUser = User::query()->where('email', 'brand-new-member@example.com')->firstOrFail();
+
+    expect($createdUser->name)->toBe('Brand New Member')
+        ->and($createdUser->phone_number)->toBe('+15559998888')
+        ->and($createdUser->hasRole(HomeDutyRole::GroupMember))->toBeTrue();
+
+    expect(GroupMember::query()
+        ->where('group_id', $group->id)
+        ->where('user_id', $createdUser->id)
+        ->where('role', GroupMemberRole::Member->value)
+        ->exists())->toBeTrue();
+
+    expect($memberInvitation->fresh()->accepted_by_user_id)->toBe($createdUser->id);
+
+    Notification::assertSentTo($createdUser, ResetPassword::class);
+});
+
+it('exposes pending invitation registration state to group managers', function (): void {
+    /** @var User $owner */
+    $owner = User::factory()->createOne();
+    $group = createOwnedGroupFor($owner);
+
+    /** @var User $admin */
+    $admin = User::factory()->member()->createOne([
+        'email' => 'members-admin@example.com',
+    ]);
+
+    $adminInvitation = GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => $admin->email,
+        'role' => GroupMemberRole::Admin,
+    ]);
+
+    actingAs($admin);
+
+    post(route('group-invitations.accept', $adminInvitation))
+        ->assertRedirect(route('dashboard'));
+
+    $registeredInvitee = User::factory()->member()->createOne([
+        'email' => 'registered-pending@example.com',
+        'name' => 'Registered Pending',
+    ]);
+
+    GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => 'waiting-on-signin@example.com',
+        'name' => 'Waiting Invitee',
+        'role' => GroupMemberRole::Member,
+    ]);
+
+    GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => $registeredInvitee->email,
+        'name' => $registeredInvitee->name,
+        'role' => GroupMemberRole::Member,
+    ]);
+
+    get(route('groups.members.index', $group))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
+            ->component('groups/Members')
+            ->where('canManageMembers', true)
+            ->has('pendingInvitations', 2)
+            ->where('pendingInvitations.0.email', $registeredInvitee->email)
+            ->where('pendingInvitations.0.hasRegisteredUser', true)
+            ->where('pendingInvitations.0.registeredUserName', $registeredInvitee->name)
+            ->where('pendingInvitations.1.email', 'waiting-on-signin@example.com')
+            ->where('pendingInvitations.1.hasRegisteredUser', false)
+            ->where('pendingInvitations.1.registeredUserName', null)
+        );
 });
 
 it('allows an owner to update and remove a group member', function (): void {

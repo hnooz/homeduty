@@ -11,7 +11,8 @@ use App\Services\Groups\InviteGroupMember;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -80,9 +81,14 @@ class GroupInvitationController extends Controller
             ->first();
 
         if (! $matchedUser) {
-            throw ValidationException::withMessages([
-                'invitation' => 'This invitation can only be accepted directly after the invited person registers or signs in.',
+            $matchedUser = User::create([
+                'name' => $groupInvitation->name,
+                'email' => $groupInvitation->email,
+                'phone_number' => $groupInvitation->phone_number,
+                'password' => Str::random(32),
             ]);
+
+            Password::sendResetLink(['email' => $matchedUser->email]);
         }
 
         $acceptGroupInvitation->handle($groupInvitation, $matchedUser);
