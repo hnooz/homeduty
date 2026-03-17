@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::patch('groups/{group}/members/{groupMember}', [GroupMemberController::class, 'update'])->name('groups.members.update');
     Route::delete('groups/{group}/members/{groupMember}', [GroupMemberController::class, 'destroy'])->name('groups.members.destroy');
     Route::post('groups/{group}/invitations', [GroupInvitationController::class, 'store'])->name('groups.invitations.store');
+    Route::post('groups/{group}/invitations/{groupInvitation}/accept-direct', [GroupInvitationController::class, 'acceptDirect'])->name('groups.invitations.accept-direct');
     Route::delete('groups/{group}/invitations/{groupInvitation}', [GroupInvitationController::class, 'destroy'])->name('groups.invitations.destroy');
     Route::get('group-invitations/{groupInvitation}', [GroupInvitationController::class, 'show'])->name('group-invitations.show');
     Route::post('group-invitations/{groupInvitation}/accept', [GroupInvitationController::class, 'accept'])->name('group-invitations.accept');

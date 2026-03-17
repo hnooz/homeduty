@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\GroupMemberRole;
 use App\Http\Requests\GroupMemberUpdateRequest;
 use App\Models\Group;
+use App\Models\GroupInvitation;
 use App\Models\GroupMember;
+use App\Models\User;
 use App\Services\Groups\RemoveGroupMember;
 use App\Services\Groups\UpdateGroupMemberRole;
 use Illuminate\Http\RedirectResponse;
@@ -25,6 +27,11 @@ class GroupMemberController extends Controller
             'invitations' => fn ($query) => $query->pending()->latest(),
         ]);
 
+        $registeredUsersByEmail = User::query()
+            ->whereIn('email', $group->invitations->pluck('email')->all())
+            ->get()
+            ->keyBy(fn (User $user): string => strtolower($user->email));
+
         return Inertia::render('groups/Members', [
             'group' => [
                 'id' => $group->id,
@@ -32,9 +39,9 @@ class GroupMemberController extends Controller
                 'ownerId' => $group->owner_id,
             ],
             'members' => $group->memberships
-                ->sortByDesc(fn (GroupMember $membership) => $membership->role === GroupMemberRole::Admin)
+                ->sortByDesc(fn (GroupMember $membership): bool => $membership->role === GroupMemberRole::Admin)
                 ->values()
-                ->map(fn (GroupMember $membership) => [
+                ->map(fn (GroupMember $membership): array => [
                     'id' => $membership->id,
                     'userId' => $membership->user_id,
                     'name' => $membership->user->name,
@@ -44,16 +51,22 @@ class GroupMemberController extends Controller
                     'roleLabel' => $membership->role->label(),
                     'isOwner' => $membership->group->owner_id === $membership->user_id,
                 ]),
-            'pendingInvitations' => $group->invitations->map(fn ($invitation) => [
-                'token' => $invitation->token,
-                'name' => $invitation->name,
-                'email' => $invitation->email,
-                'phoneNumber' => $invitation->phone_number,
-                'role' => $invitation->role->value,
-                'roleLabel' => $invitation->role->label(),
-                'expiresAt' => $invitation->expires_at?->toIso8601String(),
-            ]),
-            'roleOptions' => collect(GroupMemberRole::cases())->map(fn (GroupMemberRole $role) => [
+            'pendingInvitations' => $group->invitations->map(function (GroupInvitation $invitation) use ($registeredUsersByEmail): array {
+                $matchedUser = $registeredUsersByEmail->get(strtolower($invitation->email));
+
+                return [
+                    'token' => $invitation->token,
+                    'name' => $invitation->name,
+                    'email' => $invitation->email,
+                    'phoneNumber' => $invitation->phone_number,
+                    'role' => $invitation->role->value,
+                    'roleLabel' => $invitation->role->label(),
+                    'expiresAt' => $invitation->expires_at?->toIso8601String(),
+                    'hasRegisteredUser' => (bool) $matchedUser,
+                    'registeredUserName' => $matchedUser?->name,
+                ];
+            }),
+            'roleOptions' => collect(GroupMemberRole::cases())->map(fn (GroupMemberRole $role): array => [
                 'value' => $role->value,
                 'label' => $role->label(),
             ]),

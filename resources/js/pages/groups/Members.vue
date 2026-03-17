@@ -39,6 +39,8 @@ type GroupInvitation = {
     role: string;
     roleLabel: string;
     expiresAt: string | null;
+    hasRegisteredUser: boolean;
+    registeredUserName: string | null;
 };
 
 type Props = {
@@ -213,16 +215,35 @@ const currentUser = computed(() => page.props.auth.user);
                                         </p>
                                     </div>
 
-                                    <Form
-                                        v-if="canManageMembers"
-                                        v-bind="GroupInvitationController.destroy.form({ group: group.id, groupInvitation: invitation.token })"
-                                        v-slot="{ processing }"
-                                    >
-                                        <Button type="submit" variant="outline" :disabled="processing">
-                                            <Spinner v-if="processing" />
-                                            Cancel invitation
-                                        </Button>
-                                    </Form>
+                                    <div v-if="canManageMembers" class="flex flex-col gap-3 md:items-end">
+                                        <Form
+                                            v-if="invitation.hasRegisteredUser"
+                                            v-bind="GroupInvitationController.acceptDirect.form({ group: group.id, groupInvitation: invitation.token })"
+                                            v-slot="{ processing: accepting }"
+                                        >
+                                            <Button type="submit" :disabled="accepting">
+                                                <Spinner v-if="accepting" />
+                                                Accept directly
+                                            </Button>
+                                        </Form>
+
+                                        <p v-if="invitation.hasRegisteredUser" class="text-xs text-muted-foreground md:text-right">
+                                            {{ invitation.registeredUserName }} already has an account and can be added immediately.
+                                        </p>
+                                        <p v-else class="text-xs text-muted-foreground md:text-right">
+                                            Waiting for this person to register or sign in before acceptance.
+                                        </p>
+
+                                        <Form
+                                            v-bind="GroupInvitationController.destroy.form({ group: group.id, groupInvitation: invitation.token })"
+                                            v-slot="{ processing }"
+                                        >
+                                            <Button type="submit" variant="outline" :disabled="processing">
+                                                <Spinner v-if="processing" />
+                                                Cancel invitation
+                                            </Button>
+                                        </Form>
+                                    </div>
                                 </div>
                             </article>
                         </CardContent>

@@ -25,7 +25,7 @@ function createOwnedGroupFor(User $owner, string $name = 'Maple House'): Group
     ]);
 }
 
-it('allows a home group owner to invite a new member', function () {
+it('allows a home group owner to invite a new member', function (): void {
     Notification::fake();
 
     /** @var User $owner */
@@ -46,13 +46,13 @@ it('allows a home group owner to invite a new member', function () {
     expect($invitation->group_id)->toBe($group->id)
         ->and($invitation->role)->toBe(GroupMemberRole::Member);
 
-    Notification::assertSentOnDemand(HomeGroupInvitationNotification::class, function (HomeGroupInvitationNotification $notification, array $channels, object $notifiable) use ($invitation) {
+    Notification::assertSentOnDemand(HomeGroupInvitationNotification::class, function (HomeGroupInvitationNotification $notification, array $channels, object $notifiable) use ($invitation): bool {
         return in_array('mail', $channels, true)
             && $notifiable->routes['mail'] === $invitation->email;
     });
 });
 
-it('allows an invited existing user to accept a pending invitation', function () {
+it('allows an invited existing user to accept a pending invitation', function (): void {
     /** @var User $owner */
     $owner = User::factory()->createOne();
     $group = createOwnedGroupFor($owner);
@@ -84,7 +84,7 @@ it('allows an invited existing user to accept a pending invitation', function ()
         ->and($invitation->fresh()->accepted_by_user_id)->toBe($invitee->id);
 });
 
-it('auto-accepts a matching invitation during registration', function () {
+it('auto-accepts a matching invitation during registration', function (): void {
     /** @var User $owner */
     $owner = User::factory()->createOne();
     $group = createOwnedGroupFor($owner);
@@ -118,7 +118,7 @@ it('auto-accepts a matching invitation during registration', function () {
         ->exists())->toBeTrue();
 });
 
-it('prevents non-owners from inviting additional members', function () {
+it('prevents non-owners from inviting additional members', function (): void {
     /** @var User $owner */
     $owner = User::factory()->createOne();
     $group = createOwnedGroupFor($owner);
@@ -141,7 +141,7 @@ it('prevents non-owners from inviting additional members', function () {
     ])->assertForbidden();
 });
 
-it('allows an invited admin to manage members after accepting the invitation', function () {
+it('allows an invited admin to manage members after accepting the invitation', function (): void {
     Notification::fake();
 
     /** @var User $owner */
@@ -193,7 +193,54 @@ it('allows an invited admin to manage members after accepting the invitation', f
     expect(GroupInvitation::query()->where('email', 'jordan@example.com')->exists())->toBeTrue();
 });
 
-it('allows an owner to update and remove a group member', function () {
+it('allows a group admin to directly accept a registered pending member invitation', function (): void {
+    /** @var User $owner */
+    $owner = User::factory()->createOne();
+    $group = createOwnedGroupFor($owner);
+
+    /** @var User $admin */
+    $admin = User::factory()->member()->createOne([
+        'email' => 'admin-direct@example.com',
+    ]);
+
+    $adminInvitation = GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => $admin->email,
+        'role' => GroupMemberRole::Admin,
+    ]);
+
+    actingAs($admin);
+
+    post(route('group-invitations.accept', $adminInvitation))
+        ->assertRedirect(route('dashboard'));
+
+    /** @var User $invitee */
+    $invitee = User::factory()->member()->createOne([
+        'email' => 'member-direct@example.com',
+    ]);
+
+    $memberInvitation = GroupInvitation::factory()->createOne([
+        'group_id' => $group->id,
+        'invited_by_user_id' => $owner->id,
+        'email' => $invitee->email,
+        'role' => GroupMemberRole::Member,
+    ]);
+
+    post(route('groups.invitations.accept-direct', [$group, $memberInvitation]))
+        ->assertRedirect(route('groups.members.index', $group));
+
+    expect(GroupMember::query()
+        ->where('group_id', $group->id)
+        ->where('user_id', $invitee->id)
+        ->where('role', GroupMemberRole::Member->value)
+        ->exists())->toBeTrue();
+
+    expect($memberInvitation->fresh()->accepted_by_user_id)->toBe($invitee->id)
+        ->and($invitee->fresh()->hasRole(HomeDutyRole::GroupMember))->toBeTrue();
+});
+
+it('allows an owner to update and remove a group member', function (): void {
     /** @var User $owner */
     $owner = User::factory()->createOne();
     $group = createOwnedGroupFor($owner);
