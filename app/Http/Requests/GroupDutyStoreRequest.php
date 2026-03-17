@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\DutyFrequency;
+use App\Enums\DutyType;
 use App\Models\Group;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -32,12 +33,11 @@ class GroupDutyStoreRequest extends FormRequest
         $group = $this->route('group');
 
         return [
-            'name' => ['required', 'string', 'min:3', 'max:120'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'frequency' => ['required', new Enum(DutyFrequency::class)],
+            'type' => ['required', new Enum(DutyType::class)],
             'starts_on' => ['required', 'date'],
-            'assigned_user_id' => [
-                'nullable',
+            'member_ids' => ['required', 'array', 'min:1'],
+            'member_ids.*' => [
+                'required',
                 'integer',
                 Rule::exists('group_members', 'user_id')->where(fn ($query) => $query->where('group_id', $group?->id)),
             ],
