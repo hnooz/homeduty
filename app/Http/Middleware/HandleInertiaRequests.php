@@ -37,6 +37,12 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
+        $activeGroup = null;
+
+        if ($user) {
+            $user->loadMissing(['ownedGroup', 'groupMemberships.group']);
+            $activeGroup = $user->ownedGroup ?? $user->groupMemberships->first()?->group;
+        }
 
         return [
             ...parent::share($request),
@@ -58,6 +64,12 @@ class HandleInertiaRequests extends Middleware
                     ]
                     : null,
             ],
+            'homeGroup' => $activeGroup
+                ? [
+                    'id' => $activeGroup->id,
+                    'name' => $activeGroup->name,
+                ]
+                : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

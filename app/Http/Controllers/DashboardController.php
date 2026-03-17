@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DutySlot;
 use App\Models\Group;
 use App\Models\GroupInvitation;
 use Illuminate\Http\Request;
@@ -31,6 +32,19 @@ class DashboardController extends Controller
             'duties as duties_count',
         ]);
 
+        $upcomingDuties = $user ? DutySlot::query()
+            ->where('user_id', $user->id)
+            ->where('date', '>=', now()->toDateString())
+            ->with('duty')
+            ->orderBy('date')
+            ->limit(5)
+            ->get()
+            ->map(fn (DutySlot $slot) => [
+                'date' => $slot->date->toDateString(),
+                'type' => $slot->duty->type->label(),
+                'icon' => $slot->duty->type->icon(),
+            ]) : [];
+
         return Inertia::render('Dashboard', [
             'canCreateHomeGroup' => $user?->can('create', Group::class) ?? false,
             'canManageHomeGroupMembers' => $activeGroup ? $user?->can('manageMembers', $activeGroup) ?? false : false,
@@ -56,6 +70,7 @@ class DashboardController extends Controller
                     'expiresAt' => $pendingInvitation->expires_at?->toIso8601String(),
                 ]
                 : null,
+            'upcomingDuties' => $upcomingDuties,
             'status' => $request->session()->get('status'),
             'homeGroupName' => $request->session()->get('home_group_name'),
         ]);
