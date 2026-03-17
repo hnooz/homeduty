@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { CalendarDays, LayoutGrid, Settings, Users } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
-import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import {
@@ -14,29 +14,47 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
+import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import { dashboard } from '@/routes';
+import { edit as editProfile } from '@/routes/profile';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage();
+const homeGroup = computed(() => page.props.homeGroup as { id: number } | null);
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+
+    if (homeGroup.value) {
+        items.push(
+            {
+                title: 'Members',
+                href: GroupMemberController.index(homeGroup.value.id),
+                icon: Users,
+            },
+            {
+                title: 'Duties',
+                href: GroupDutyController.index(homeGroup.value.id),
+                icon: CalendarDays,
+            },
+        );
+    }
+
+    items.push({
+        title: 'Settings',
+        href: editProfile(),
+        icon: Settings,
+    });
+
+    return items;
+});
 </script>
 
 <template>
@@ -58,7 +76,6 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>
