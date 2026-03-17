@@ -108,7 +108,98 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     </p>
                                 </div>
 
-                                <div class="rounded-2xl border border-dashed border-border/80 bg-muted/20 px-4 py-3 text-sm">
+                                <div v-if="canManageDuties" class="w-full rounded-2xl border border-border/70 bg-muted/20 p-4 md:max-w-md">
+                                    <Form
+                                        v-bind="GroupDutyController.update.form({ group: group.id, duty: duty.id })"
+                                        class="space-y-4"
+                                        v-slot="{ errors, processing }"
+                                    >
+                                        <div class="grid gap-2">
+                                            <Label :for="`duty-name-${duty.id}`">Duty name</Label>
+                                            <Input :id="`duty-name-${duty.id}`" name="name" :value="duty.name" required />
+                                            <InputError :message="errors.name" />
+                                        </div>
+
+                                        <div class="grid gap-2">
+                                            <Label :for="`duty-description-${duty.id}`">Description</Label>
+                                            <textarea
+                                                :id="`duty-description-${duty.id}`"
+                                                name="description"
+                                                rows="3"
+                                                :value="duty.description ?? ''"
+                                                class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                                            />
+                                            <InputError :message="errors.description" />
+                                        </div>
+
+                                        <div class="grid gap-4 sm:grid-cols-2">
+                                            <div class="grid gap-2">
+                                                <Label :for="`duty-frequency-${duty.id}`">Frequency</Label>
+                                                <select
+                                                    :id="`duty-frequency-${duty.id}`"
+                                                    name="frequency"
+                                                    :default-value="duty.frequency"
+                                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                                                >
+                                                    <option
+                                                        v-for="option in frequencyOptions"
+                                                        :key="String(option.value)"
+                                                        :value="option.value"
+                                                    >
+                                                        {{ option.label }}
+                                                    </option>
+                                                </select>
+                                                <InputError :message="errors.frequency" />
+                                            </div>
+
+                                            <div class="grid gap-2">
+                                                <Label :for="`duty-starts-on-${duty.id}`">Starts on</Label>
+                                                <Input :id="`duty-starts-on-${duty.id}`" name="starts_on" type="date" :value="duty.startsOn ?? ''" required />
+                                                <InputError :message="errors.starts_on" />
+                                            </div>
+                                        </div>
+
+                                        <div class="grid gap-2">
+                                            <Label :for="`duty-assigned-user-${duty.id}`">Assign to</Label>
+                                            <select
+                                                :id="`duty-assigned-user-${duty.id}`"
+                                                name="assigned_user_id"
+                                                :default-value="duty.assignedUser?.id ?? ''"
+                                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                                            >
+                                                <option value="">Leave unassigned</option>
+                                                <option
+                                                    v-for="option in assigneeOptions"
+                                                    :key="String(option.value)"
+                                                    :value="option.value"
+                                                >
+                                                    {{ option.label }}
+                                                </option>
+                                            </select>
+                                            <InputError :message="errors.assigned_user_id" />
+                                        </div>
+
+                                        <div class="flex flex-col gap-3 sm:flex-row">
+                                            <Button type="submit" :disabled="processing">
+                                                <Spinner v-if="processing" />
+                                                Save duty
+                                            </Button>
+                                        </div>
+                                    </Form>
+
+                                    <Form
+                                        v-bind="GroupDutyController.destroy.form({ group: group.id, duty: duty.id })"
+                                        class="mt-3"
+                                        v-slot="{ processing }"
+                                    >
+                                        <Button type="submit" variant="destructive" :disabled="processing">
+                                            <Spinner v-if="processing" />
+                                            Remove duty
+                                        </Button>
+                                    </Form>
+                                </div>
+
+                                <div v-else class="rounded-2xl border border-dashed border-border/80 bg-muted/20 px-4 py-3 text-sm">
                                     <p class="font-medium text-foreground">
                                         {{ duty.assignedUser ? duty.assignedUser.name : 'Unassigned' }}
                                     </p>

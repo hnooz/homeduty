@@ -18,6 +18,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('groups', [GroupController::class, 'store'])->name('groups.store');
     Route::get('groups/{group}/duties', [GroupDutyController::class, 'index'])->name('groups.duties.index');
     Route::post('groups/{group}/duties', [GroupDutyController::class, 'store'])->name('groups.duties.store');
+    Route::patch('groups/{group}/duties/{duty}', [GroupDutyController::class, 'update'])->name('groups.duties.update');
+    Route::delete('groups/{group}/duties/{duty}', [GroupDutyController::class, 'destroy'])->name('groups.duties.destroy');
     Route::get('groups/{group}/members', [GroupMemberController::class, 'index'])->name('groups.members.index');
     Route::patch('groups/{group}/members/{groupMember}', [GroupMemberController::class, 'update'])->name('groups.members.update');
     Route::delete('groups/{group}/members/{groupMember}', [GroupMemberController::class, 'destroy'])->name('groups.members.destroy');
