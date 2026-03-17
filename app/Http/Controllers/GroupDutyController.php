@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\DutyFrequency;
-use App\Enums\GroupMemberRole;
+use App\Enums\DutyType;
 use App\Http\Requests\GroupDutyStoreRequest;
 use App\Http\Requests\GroupDutyUpdateRequest;
 use App\Models\Duty;
@@ -25,7 +24,8 @@ class GroupDutyController extends Controller
         Gate::authorize('viewDuties', $group);
 
         $group->load([
-            'duties.assignedUser',
+            'duties.members',
+            'duties.slots.user',
             'memberships.user',
         ]);
 
@@ -39,30 +39,33 @@ class GroupDutyController extends Controller
                 ->values()
                 ->map(fn (Duty $duty): array => [
                     'id' => $duty->id,
-                    'name' => $duty->name,
-                    'description' => $duty->description,
-                    'frequency' => $duty->frequency->value,
-                    'frequencyLabel' => $duty->frequency->label(),
+                    'type' => $duty->type->value,
+                    'typeLabel' => $duty->type->label(),
+                    'typeIcon' => $duty->type->icon(),
                     'startsOn' => $duty->starts_on?->toDateString(),
-                    'assignedUser' => $duty->assignedUser
-                        ? [
-                            'id' => $duty->assignedUser->id,
-                            'name' => $duty->assignedUser->name,
-                            'email' => $duty->assignedUser->email,
-                        ]
-                        : null,
+                    'members' => $duty->members->map(fn ($user): array => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                    ])->values()->all(),
+                    'upcomingSlots' => $duty->slots
+                        ->where('date', '>=', now()->startOfDay())
+                        ->take(8)
+                        ->map(fn ($slot): array => [
+                            'date' => $slot->date->toDateString(),
+                            'userName' => $slot->user?->name ?? 'Unassigned',
+                            'userId' => $slot->user_id,
+                        ])->values()->all(),
                 ]),
-            'assigneeOptions' => $group->memberships
-                ->sortByDesc(fn (GroupMember $membership): bool => $membership->role === GroupMemberRole::Admin)
+            'memberOptions' => $group->memberships
                 ->values()
                 ->map(fn (GroupMember $membership): array => [
                     'value' => $membership->user_id,
                     'label' => $membership->user->name,
-                    'description' => $membership->role->label().' • '.$membership->user->email,
                 ]),
-            'frequencyOptions' => collect(DutyFrequency::cases())->map(fn (DutyFrequency $frequency): array => [
-                'value' => $frequency->value,
-                'label' => $frequency->label(),
+            'typeOptions' => collect(DutyType::cases())->map(fn (DutyType $type): array => [
+                'value' => $type->value,
+                'label' => $type->label(),
+                'icon' => $type->icon(),
             ]),
             'canManageDuties' => $request->user()->can('manageDuties', $group),
             'status' => session('status'),

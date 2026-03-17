@@ -1,13 +1,15 @@
 <?php
 
-use App\Enums\DutyFrequency;
+use App\Enums\DutyType;
 use App\Enums\HomeDutyRole;
 use App\Models\Duty;
+use App\Models\DutySlot;
 use App\Models\Group;
 use App\Models\GroupMember;
 use App\Models\User;
 use App\Services\Groups\CreateHomeGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -52,7 +54,9 @@ it('shows the duties page to group members', function (): void {
         );
 });
 
-it('allows a home group owner to create and assign a duty', function (): void {
+it('allows a home group owner to create a duty with members', function (): void {
+    Notification::fake();
+
     /** @var User $owner */
     $owner = User::factory()->createOne();
     $group = createGroupForDutyTests($owner);
@@ -69,18 +73,18 @@ it('allows a home group owner to create and assign a duty', function (): void {
     actingAs($owner);
 
     post(route('groups.duties.store', $group), [
-        'name' => 'Kitchen reset',
-        'description' => 'Wipe the counters and put everything back in place.',
-        'frequency' => DutyFrequency::Daily->value,
+        'type' => DutyType::Cooking->value,
         'starts_on' => now()->toDateString(),
-        'assigned_user_id' => $member->id,
+        'member_ids' => [$owner->id, $member->id],
     ])->assertRedirect(route('groups.duties.index', $group));
 
-    $duty = Duty::query()->where('name', 'Kitchen reset')->firstOrFail();
+    $duty = Duty::query()->where('type', DutyType::Cooking)->firstOrFail();
 
     expect($duty->group_id)->toBe($group->id)
-        ->and($duty->assigned_user_id)->toBe($member->id)
-        ->and($duty->frequency)->toBe(DutyFrequency::Daily);
+        ->and($duty->type)->toBe(DutyType::Cooking)
+        ->and($duty->members)->toHaveCount(2);
+
+    expect(DutySlot::query()->where('duty_id', $duty->id)->count())->toBeGreaterThan(0);
 });
 
 it('prevents regular members from creating duties', function (): void {
@@ -100,15 +104,15 @@ it('prevents regular members from creating duties', function (): void {
     actingAs($member);
 
     post(route('groups.duties.store', $group), [
-        'name' => 'Hallway sweep',
-        'frequency' => DutyFrequency::Weekly->value,
+        'type' => DutyType::Cleaning->value,
         'starts_on' => now()->toDateString(),
+        'member_ids' => [$member->id],
     ])->assertForbidden();
 
-    expect(Duty::query()->where('name', 'Hallway sweep')->exists())->toBeFalse();
+    expect(Duty::query()->where('type', DutyType::Cleaning)->exists())->toBeFalse();
 });
 
-it('rejects an assignee who does not belong to the home group', function (): void {
+it('rejects member_ids containing users not in the home group', function (): void {
     /** @var User $owner */
     $owner = User::factory()->createOne();
     $group = createGroupForDutyTests($owner);
@@ -119,16 +123,17 @@ it('rejects an assignee who does not belong to the home group', function (): voi
     actingAs($owner);
 
     post(route('groups.duties.store', $group), [
-        'name' => 'Bathroom deep clean',
-        'frequency' => DutyFrequency::Monthly->value,
+        'type' => DutyType::Cooking->value,
         'starts_on' => now()->toDateString(),
-        'assigned_user_id' => $outsider->id,
-    ])->assertSessionHasErrors('assigned_user_id');
+        'member_ids' => [$outsider->id],
+    ])->assertSessionHasErrors('member_ids.0');
 
-    expect(Duty::query()->where('name', 'Bathroom deep clean')->exists())->toBeFalse();
+    expect(Duty::query()->where('type', DutyType::Cooking)->exists())->toBeFalse();
 });
 
 it('allows an admin to update and remove a planned duty', function (): void {
+    Notification::fake();
+
     /** @var User $owner */
     $owner = User::factory()->createOne();
     $group = createGroupForDutyTests($owner);
@@ -158,28 +163,24 @@ it('allows an admin to update and remove a planned duty', function (): void {
     /** @var Duty $duty */
     $duty = Duty::query()->create([
         'group_id' => $group->id,
-        'assigned_user_id' => $member->id,
-        'name' => 'Bins',
-        'description' => 'Take the bins out.',
-        'frequency' => DutyFrequency::Weekly,
+        'type' => DutyType::Cooking,
         'starts_on' => now()->toDateString(),
     ]);
+
+    $duty->members()->attach($owner->id, ['sort_order' => 0]);
 
     actingAs($admin);
 
     patch(route('groups.duties.update', [$group, $duty]), [
-        'name' => 'Recycling and bins',
-        'description' => 'Take the recycling and bins out the night before collection.',
-        'frequency' => DutyFrequency::Monthly->value,
+        'type' => DutyType::Cleaning->value,
         'starts_on' => now()->addDay()->toDateString(),
-        'assigned_user_id' => $admin->id,
+        'member_ids' => [$admin->id, $member->id],
     ])->assertRedirect(route('groups.duties.index', $group));
 
     $duty = $duty->fresh();
 
-    expect($duty->name)->toBe('Recycling and bins')
-        ->and($duty->frequency)->toEqual(DutyFrequency::Monthly)
-        ->and($duty->assigned_user_id)->toBe($admin->id);
+    expect($duty->type)->toEqual(DutyType::Cleaning)
+        ->and($duty->members)->toHaveCount(2);
 
     delete(route('groups.duties.destroy', [$group, $duty]))
         ->assertRedirect(route('groups.duties.index', $group));
@@ -204,24 +205,21 @@ it('prevents regular members from updating or removing duties', function (): voi
     /** @var Duty $duty */
     $duty = Duty::query()->create([
         'group_id' => $group->id,
-        'assigned_user_id' => null,
-        'name' => 'Vacuum hall',
-        'description' => null,
-        'frequency' => DutyFrequency::Weekly,
+        'type' => DutyType::Cooking,
         'starts_on' => now()->toDateString(),
     ]);
 
     actingAs($member);
 
     patch(route('groups.duties.update', [$group, $duty]), [
-        'name' => 'Blocked update',
-        'frequency' => DutyFrequency::Daily->value,
+        'type' => DutyType::Cleaning->value,
         'starts_on' => now()->toDateString(),
+        'member_ids' => [$member->id],
     ])->assertForbidden();
 
     delete(route('groups.duties.destroy', [$group, $duty]))
         ->assertForbidden();
 
-    expect($duty->fresh()->name)->toBe('Vacuum hall')
+    expect($duty->fresh()->type)->toBe(DutyType::Cooking)
         ->and(Duty::query()->whereKey($duty->id)->exists())->toBeTrue();
 });
