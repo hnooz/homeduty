@@ -4,28 +4,19 @@ namespace App\Models;
 
 use App\Enums\GroupMemberRole;
 use Database\Factories\GroupInvitationFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[UseFactory(GroupInvitationFactory::class)]
+#[Fillable(['group_id', 'invited_by_user_id', 'accepted_by_user_id', 'name', 'email', 'phone_number', 'role', 'token', 'expires_at', 'accepted_at'])]
 class GroupInvitation extends Model
 {
     /** @use HasFactory<GroupInvitationFactory> */
     use HasFactory;
-
-    protected $fillable = [
-        'group_id',
-        'invited_by_user_id',
-        'accepted_by_user_id',
-        'name',
-        'email',
-        'phone_number',
-        'role',
-        'token',
-        'expires_at',
-        'accepted_at',
-    ];
 
     /**
      * @return array<string, string>

@@ -3,17 +3,13 @@
 namespace App\Models;
 
 use App\Enums\GroupMemberRole;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable(['group_id', 'user_id', 'role'])]
 class GroupMember extends Model
 {
-    protected $fillable = [
-        'group_id',
-        'user_id',
-        'role',
-    ];
-
     /**
      * @return array<string, string>
      */

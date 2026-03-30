@@ -4,27 +4,20 @@ namespace App\Models;
 
 use App\Enums\DutyType;
 use Database\Factories\DutyFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[UseFactory(DutyFactory::class)]
+#[Fillable(['group_id', 'type', 'starts_on'])]
 class Duty extends Model
 {
     /** @use HasFactory<DutyFactory> */
     use HasFactory;
-
-    protected $fillable = [
-        'group_id',
-        'type',
-        'starts_on',
-    ];
-
-    protected static function newFactory(): DutyFactory
-    {
-        return DutyFactory::new();
-    }
 
     /**
      * @return array<string, string>

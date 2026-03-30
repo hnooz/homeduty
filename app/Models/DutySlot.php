@@ -2,19 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable(['duty_id', 'user_id', 'date', 'notified_day_before', 'notified_same_day'])]
 class DutySlot extends Model
 {
-    protected $fillable = [
-        'duty_id',
-        'user_id',
-        'date',
-        'notified_day_before',
-        'notified_same_day',
-    ];
-
     /**
      * @return array<string, string>
      */
