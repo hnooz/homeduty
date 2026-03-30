@@ -127,14 +127,14 @@ function formatDate(dateStr: string): string {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-3xl p-4 md:p-6">
             <!-- Header -->
-            <section class="rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-6 shadow-sm dark:border-amber-900/30 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-yellow-950/20">
+            <section class="rounded-3xl border border-indigo-200/70 bg-gradient-to-br from-indigo-50 via-purple-50 to-violet-50 p-6 shadow-sm dark:border-indigo-900/30 dark:from-indigo-950/30 dark:via-purple-950/20 dark:to-violet-950/20">
                 <Heading
                     :title="`${group.name} duties`"
                     :description="canManageDuties
                         ? 'Choose a duty type, pick a start date, and select members to begin the rotation.'
                         : 'View the current duty rotation schedule for your household.'"
                 />
-                <p v-if="status" class="mt-4 text-sm font-medium text-amber-800 dark:text-amber-200">
+                <p v-if="status" class="mt-4 text-sm font-medium text-indigo-800 dark:text-indigo-200">
                     {{ status.replaceAll('-', ' ') }}
                 </p>
             </section>
@@ -146,7 +146,7 @@ function formatDate(dateStr: string): string {
                         <Card
                             v-for="duty in duties"
                             :key="duty.id"
-                            class="rounded-3xl border-amber-200/50 shadow-sm dark:border-amber-900/30"
+                            class="rounded-3xl border-indigo-200/50 shadow-sm dark:border-indigo-900/30"
                         >
                             <CardHeader class="pb-3">
                                 <div class="flex items-center justify-between">
@@ -154,7 +154,7 @@ function formatDate(dateStr: string): string {
                                         <span class="text-2xl">{{ duty.typeIcon }}</span>
                                         <CardTitle class="text-lg">{{ duty.typeLabel }}</CardTitle>
                                     </div>
-                                    <Badge variant="outline" class="border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-300">
+                                    <Badge variant="outline" class="border-indigo-300 text-indigo-700 dark:border-indigo-700 dark:text-indigo-300">
                                         Starts {{ duty.startsOn ? formatDate(duty.startsOn) : 'soon' }}
                                     </Badge>
                                 </div>
@@ -169,15 +169,15 @@ function formatDate(dateStr: string): string {
                                     <Badge
                                         v-for="member in duty.members"
                                         :key="member.id"
-                                        class="bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+                                        class="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200"
                                     >
                                         {{ member.name }}
                                     </Badge>
                                 </div>
 
                                 <!-- Upcoming rotation schedule -->
-                                <div v-if="duty.upcomingSlots.length" class="rounded-2xl border border-amber-100 bg-amber-50/50 p-3 dark:border-amber-900/20 dark:bg-amber-950/20">
-                                    <p class="mb-2 text-xs font-medium uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                                <div v-if="duty.upcomingSlots.length" class="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-3 dark:border-indigo-900/20 dark:bg-indigo-950/20">
+                                    <p class="mb-2 text-xs font-medium uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                                         Upcoming schedule
                                     </p>
                                     <div class="grid gap-1">
@@ -185,10 +185,10 @@ function formatDate(dateStr: string): string {
                                             v-for="(slot, i) in duty.upcomingSlots"
                                             :key="i"
                                             class="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm"
-                                            :class="i === 0 ? 'bg-amber-200/50 font-medium dark:bg-amber-800/30' : ''"
+                                            :class="i === 0 ? 'bg-indigo-200/50 font-medium dark:bg-indigo-800/30' : ''"
                                         >
-                                            <span class="text-amber-900 dark:text-amber-100">{{ formatDate(slot.date) }}</span>
-                                            <span class="text-amber-700 dark:text-amber-300">{{ slot.userName }}</span>
+                                            <span class="text-indigo-900 dark:text-indigo-100">{{ formatDate(slot.date) }}</span>
+                                            <span class="text-indigo-700 dark:text-indigo-300">{{ slot.userName }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -199,7 +199,7 @@ function formatDate(dateStr: string): string {
                                         v-if="editingDutyId !== duty.id"
                                         variant="outline"
                                         size="sm"
-                                        class="border-amber-300 text-amber-700 hover:bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/30"
+                                        class="border-indigo-300 text-indigo-700 hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-300 dark:hover:bg-indigo-900/30"
                                         @click="startEditing(duty)"
                                     >
                                         Edit
@@ -217,7 +217,7 @@ function formatDate(dateStr: string): string {
                                 </div>
 
                                 <!-- Edit form (inline) -->
-                                <div v-if="canManageDuties && editingDutyId === duty.id" class="rounded-2xl border border-amber-200 bg-white p-4 dark:border-amber-800 dark:bg-amber-950/30">
+                                <div v-if="canManageDuties && editingDutyId === duty.id" class="rounded-2xl border border-indigo-200 bg-white p-4 dark:border-indigo-800 dark:bg-indigo-950/30">
                                     <Form
                                         v-bind="GroupDutyController.update.form({ group: group.id, duty: duty.id })"
                                         class="space-y-4"
@@ -231,7 +231,7 @@ function formatDate(dateStr: string): string {
                                                     :id="`edit-type-${duty.id}`"
                                                     name="type"
                                                     :value="duty.type"
-                                                    class="flex h-10 w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm dark:border-amber-800 dark:bg-amber-950/50"
+                                                    class="flex h-10 w-full rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm dark:border-indigo-800 dark:bg-indigo-950/50"
                                                 >
                                                     <option v-for="opt in typeOptions" :key="opt.value" :value="opt.value">
                                                         {{ opt.icon }} {{ opt.label }}
@@ -255,11 +255,11 @@ function formatDate(dateStr: string): string {
                                                     v-for="id in editSelectedMemberIds"
                                                     :key="id"
                                                     type="button"
-                                                    class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-200 dark:hover:bg-amber-800/50"
+                                                    class="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800 transition-colors hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-200 dark:hover:bg-indigo-800/50"
                                                     @click="toggleEditMember(id)"
                                                 >
                                                     {{ memberOptions.find((m) => m.value === id)?.label }}
-                                                    <span class="text-amber-500">&times;</span>
+                                                    <span class="text-indigo-500">&times;</span>
                                                 </button>
                                             </div>
                                             <div v-if="editAvailableMembers.length" class="flex flex-wrap gap-1.5">
@@ -267,7 +267,7 @@ function formatDate(dateStr: string): string {
                                                     v-for="member in editAvailableMembers"
                                                     :key="member.value"
                                                     type="button"
-                                                    class="inline-flex items-center rounded-full border border-dashed border-amber-300 px-3 py-1 text-sm text-amber-600 transition-colors hover:bg-amber-50 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/20"
+                                                    class="inline-flex items-center rounded-full border border-dashed border-indigo-300 px-3 py-1 text-sm text-indigo-600 transition-colors hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
                                                     @click="toggleEditMember(member.value)"
                                                 >
                                                     + {{ member.label }}
@@ -284,7 +284,7 @@ function formatDate(dateStr: string): string {
                                         </div>
 
                                         <div class="flex gap-2">
-                                            <Button type="submit" size="sm" :disabled="processing" class="bg-amber-600 hover:bg-amber-700">
+                                            <Button type="submit" size="sm" :disabled="processing" class="bg-indigo-600 hover:bg-indigo-700">
                                                 <Spinner v-if="processing" />
                                                 Save changes
                                             </Button>
@@ -298,15 +298,15 @@ function formatDate(dateStr: string): string {
                         </Card>
                     </template>
 
-                    <Card v-else class="rounded-3xl border-amber-200/50 shadow-sm dark:border-amber-900/30">
-                        <CardContent class="py-8 text-center text-sm text-amber-700 dark:text-amber-300">
+                    <Card v-else class="rounded-3xl border-indigo-200/50 shadow-sm dark:border-indigo-900/30">
+                        <CardContent class="py-8 text-center text-sm text-indigo-700 dark:text-indigo-300">
                             No duties planned yet. Add a duty to start the rotation schedule.
                         </CardContent>
                     </Card>
                 </div>
 
                 <!-- Create form (right side) -->
-                <Card v-if="canManageDuties" class="h-fit rounded-3xl border-amber-200/50 shadow-sm dark:border-amber-900/30">
+                <Card v-if="canManageDuties" class="h-fit rounded-3xl border-indigo-200/50 shadow-sm dark:border-indigo-900/30">
                     <CardHeader>
                         <CardTitle>Add a duty</CardTitle>
                         <CardDescription>
@@ -326,8 +326,8 @@ function formatDate(dateStr: string): string {
                                     <label
                                         v-for="opt in typeOptions"
                                         :key="opt.value"
-                                        class="flex cursor-pointer items-center gap-2 rounded-xl border-2 px-4 py-3 transition-colors has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 dark:has-[:checked]:border-amber-600 dark:has-[:checked]:bg-amber-950/30"
-                                        :class="'border-amber-200 hover:border-amber-300 dark:border-amber-800 dark:hover:border-amber-700'"
+                                        class="flex cursor-pointer items-center gap-2 rounded-xl border-2 px-4 py-3 transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 dark:has-[:checked]:border-indigo-600 dark:has-[:checked]:bg-indigo-950/30"
+                                        :class="'border-indigo-200 hover:border-indigo-300 dark:border-indigo-800 dark:hover:border-indigo-700'"
                                     >
                                         <input type="radio" name="type" :value="opt.value" class="sr-only" />
                                         <span class="text-xl">{{ opt.icon }}</span>
@@ -351,11 +351,11 @@ function formatDate(dateStr: string): string {
                                         v-for="id in selectedMemberIds"
                                         :key="id"
                                         type="button"
-                                        class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-200 dark:hover:bg-amber-800/50"
+                                        class="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800 transition-colors hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-200 dark:hover:bg-indigo-800/50"
                                         @click="toggleMember(id)"
                                     >
                                         {{ memberOptions.find((m) => m.value === id)?.label }}
-                                        <span class="text-amber-500">&times;</span>
+                                        <span class="text-indigo-500">&times;</span>
                                     </button>
                                 </div>
                                 <!-- Available members to add -->
@@ -364,13 +364,13 @@ function formatDate(dateStr: string): string {
                                         v-for="member in availableMembers"
                                         :key="member.value"
                                         type="button"
-                                        class="inline-flex items-center rounded-full border border-dashed border-amber-300 px-3 py-1 text-sm text-amber-600 transition-colors hover:bg-amber-50 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/20"
+                                        class="inline-flex items-center rounded-full border border-dashed border-indigo-300 px-3 py-1 text-sm text-indigo-600 transition-colors hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
                                         @click="toggleMember(member.value)"
                                     >
                                         + {{ member.label }}
                                     </button>
                                 </div>
-                                <p v-if="!memberOptions.length" class="text-xs text-amber-600 dark:text-amber-400">
+                                <p v-if="!memberOptions.length" class="text-xs text-indigo-600 dark:text-indigo-400">
                                     Accept members into the group first to assign duties.
                                 </p>
                                 <!-- Hidden inputs for form submission -->
@@ -384,7 +384,7 @@ function formatDate(dateStr: string): string {
                                 <InputError :message="errors['member_ids']" />
                             </div>
 
-                            <Button type="submit" class="w-full bg-amber-600 hover:bg-amber-700" :disabled="processing || !selectedMemberIds.length">
+                            <Button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700" :disabled="processing || !selectedMemberIds.length">
                                 <Spinner v-if="processing" />
                                 Create duty
                             </Button>
@@ -392,7 +392,7 @@ function formatDate(dateStr: string): string {
                     </CardContent>
                 </Card>
 
-                <Card v-else class="h-fit rounded-3xl border-amber-200/50 shadow-sm dark:border-amber-900/30">
+                <Card v-else class="h-fit rounded-3xl border-indigo-200/50 shadow-sm dark:border-indigo-900/30">
                     <CardHeader>
                         <CardTitle>Duty schedule</CardTitle>
                         <CardDescription>
