@@ -1,0 +1,26 @@
+{
+    "agents": [
+        "copilot",
+        "junie",
+        "claude_code",
+        "opencode"
+    ],
+    "guidelines": true,
+    "herd_mcp": false,
+    "mcp": true,
+    "nightwatch_mcp": false,
+    "packages": [
+        "laravel/fortify",
+        "spatie/laravel-permission"
+    ],
+    "sail": false,
+    "skills": [
+        "wayfinder-development",
+        "pest-testing",
+        "inertia-vue-development",
+        "tailwindcss-development",
+        "fortify-development",
+        "laravel-permission-development",
+        "laravel-11-12-app-guidelines"
+    ]
+}
