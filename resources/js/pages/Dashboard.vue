@@ -73,17 +73,17 @@ function formatDate(dateStr: string): string {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
             <!-- Hero welcome -->
-            <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-600 via-orange-500 to-amber-500 p-8 text-white shadow-lg dark:from-amber-800 dark:via-orange-700 dark:to-amber-700">
+            <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-500 to-indigo-500 p-8 text-white shadow-lg dark:from-indigo-800 dark:via-purple-700 dark:to-indigo-700">
                 <div class="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/10"></div>
                 <div class="absolute -bottom-6 -left-6 h-28 w-28 rounded-full bg-white/5"></div>
                 <div class="relative">
-                    <p class="text-sm font-medium tracking-wide text-amber-100">
+                    <p class="text-sm font-medium tracking-wide text-indigo-100">
                         Welcome back
                     </p>
                     <h1 class="mt-1 text-2xl font-bold md:text-3xl">
                         {{ user.name }}
                     </h1>
-                    <p class="mt-2 max-w-lg text-sm leading-relaxed text-amber-100">
+                    <p class="mt-2 max-w-lg text-sm leading-relaxed text-indigo-100">
                         {{ hasHomeGroup
                             ? `Managing ${props.homeGroup?.name} with ${props.homeGroup?.memberCount} members`
                             : 'Get started by creating your Home Group' }}
@@ -95,7 +95,7 @@ function formatDate(dateStr: string): string {
             <section v-if="hasHomeGroup" class="grid gap-4 sm:grid-cols-3">
                 <div class="rounded-2xl border border-border/60 bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-lg dark:bg-amber-900/40">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-lg dark:bg-indigo-900/40">
                             👥
                         </div>
                         <div>
@@ -107,7 +107,7 @@ function formatDate(dateStr: string): string {
 
                 <div class="rounded-2xl border border-border/60 bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-lg dark:bg-orange-900/40">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-lg dark:bg-purple-900/40">
                             📋
                         </div>
                         <div>
@@ -119,7 +119,7 @@ function formatDate(dateStr: string): string {
 
                 <div class="rounded-2xl border border-border/60 bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-100 text-lg dark:bg-yellow-900/40">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-lg dark:bg-violet-900/40">
                             ✉️
                         </div>
                         <div>
@@ -195,7 +195,7 @@ function formatDate(dateStr: string): string {
             </div>
 
             <!-- Pending invitation -->
-            <section v-if="pendingInvitation" class="rounded-2xl border-2 border-amber-300 bg-amber-50/50 p-6 shadow-sm dark:border-amber-700 dark:bg-amber-950/20">
+            <section v-if="pendingInvitation" class="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-6 shadow-sm dark:border-indigo-700 dark:bg-indigo-950/20">
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                         <div class="flex items-center gap-3">
