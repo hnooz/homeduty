@@ -1,11 +1,20 @@
 {
     "mcpServers": {
         "laravel-boost": {
-            "command": "/usr/bin/php8.3",
+            "command": "/Users/mohamedidris/Library/Application Support/Herd/bin/php83",
             "args": [
-                "/home/hnooz/Code/Backend/Lara/homeduty/artisan",
+                "/Users/mohamedidris/projects/homeduty/artisan",
                 "boost:mcp"
             ]
+        },
+        "herd": {
+            "command": "/Users/mohamedidris/Library/Application Support/Herd/bin/php83",
+            "args": [
+                "/Applications/Herd.app/Contents/Resources/herd-mcp.phar"
+            ],
+            "env": {
+                "SITE_PATH": "/Users/mohamedidris/projects/homeduty"
+            }
         }
     }
 }
