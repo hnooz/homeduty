@@ -20,11 +20,10 @@ fi
 
 cd "${APP_DIR}"
 
-echo "→ Putting application in maintenance mode..."
-php artisan down --retry=10
-
 echo "→ Pulling latest code..."
-git pull origin main
+if [[ "$FIRST_RUN" == false ]]; then
+  git pull origin main
+fi
 
 echo "→ Installing PHP dependencies..."
 composer install --no-dev --optimize-autoloader --no-interaction
@@ -32,6 +31,11 @@ composer install --no-dev --optimize-autoloader --no-interaction
 echo "→ Installing Node dependencies and building assets..."
 npm ci --prefer-offline
 npm run build
+
+if [[ "$FIRST_RUN" == false ]]; then
+  echo "→ Putting application in maintenance mode..."
+  php artisan down --retry=10
+fi
 
 echo "→ Caching configuration..."
 php artisan config:cache
