@@ -1,0 +1,13 @@
+[Unit]
+Description=HomeDuty Scheduler Run
+After=network.target
+
+[Service]
+Type=oneshot
+User=APP_USER
+Group=www-data
+WorkingDirectory=APP_DIR
+ExecStart=/usr/bin/php artisan schedule:run
+
+StandardOutput=append:APP_DIR/storage/logs/scheduler.log
+StandardError=append:APP_DIR/storage/logs/scheduler.log

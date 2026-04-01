@@ -1,0 +1,10 @@
+[Unit]
+Description=HomeDuty Scheduler Timer
+Requires=APP_NAME-scheduler.service
+
+[Timer]
+OnCalendar=minutely
+Persistent=true
+
+[Install]
+WantedBy=timers.target
