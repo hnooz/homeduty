@@ -28,6 +28,11 @@ fi
 echo "→ Installing PHP dependencies..."
 composer install --no-dev --optimize-autoloader --no-interaction
 
+if [[ "$FIRST_RUN" == true ]]; then
+  echo "→ Generating application key..."
+  php artisan key:generate --force
+fi
+
 echo "→ Installing Node dependencies and building assets..."
 npm ci --prefer-offline
 npm run build
