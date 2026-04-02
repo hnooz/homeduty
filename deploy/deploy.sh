@@ -18,6 +18,8 @@ if [[ "${1:-}" == "--first-run" ]]; then
   FIRST_RUN=true
 fi
 
+git config --global --add safe.directory "${APP_DIR}"
+
 cd "${APP_DIR}"
 
 echo "→ Pulling latest code..."
