@@ -2,6 +2,8 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { CalendarDays, LayoutGrid, Menu, Settings, Users } from 'lucide-vue-next';
 import { computed } from 'vue';
+import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
+import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -28,8 +30,6 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
-import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
-import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import { dashboard } from '@/routes';
 import { edit as editProfile } from '@/routes/profile';
 import type { BreadcrumbItem, NavItem } from '@/types';

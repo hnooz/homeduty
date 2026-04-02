@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, Link, router } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
 import Heading from '@/components/Heading.vue';
@@ -70,6 +70,7 @@ const selectedMemberIds = ref<number[]>([]);
 
 function toggleMember(id: number): void {
     const index = selectedMemberIds.value.indexOf(id);
+
     if (index === -1) {
         selectedMemberIds.value.push(id);
     } else {
@@ -97,6 +98,7 @@ function cancelEditing(): void {
 
 function toggleEditMember(id: number): void {
     const index = editSelectedMemberIds.value.indexOf(id);
+
     if (index === -1) {
         editSelectedMemberIds.value.push(id);
     } else {
