@@ -58,7 +58,11 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function applyEmailSettings(): void
     {
-        if (! Schema::hasTable('settings')) {
+        try {
+            if (! Schema::hasTable('settings')) {
+                return;
+            }
+        } catch (\Throwable) {
             return;
         }
 
