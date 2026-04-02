@@ -35,6 +35,9 @@ if [[ "$FIRST_RUN" == true ]]; then
   php artisan key:generate --force
 fi
 
+echo "→ Generating Wayfinder TypeScript routes..."
+php artisan wayfinder:generate --no-interaction
+
 echo "→ Installing Node dependencies and building assets..."
 npm ci --prefer-offline
 NODE_OPTIONS="--max-old-space-size=512" npm run build
