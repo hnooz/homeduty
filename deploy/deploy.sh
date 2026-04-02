@@ -35,8 +35,8 @@ if [[ "$FIRST_RUN" == true ]]; then
   php artisan key:generate --force
 fi
 
-echo "→ Generating Wayfinder TypeScript routes..."
-php artisan wayfinder:generate --no-interaction
+echo "→ Clearing stale caches before build..."
+php artisan optimize:clear
 
 echo "→ Installing Node dependencies and building assets..."
 npm ci --prefer-offline
@@ -48,10 +48,7 @@ if [[ "$FIRST_RUN" == false ]]; then
 fi
 
 echo "→ Caching configuration..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
+php artisan optimize
 
 echo "→ Running database migrations..."
 if [[ "$FIRST_RUN" == true ]]; then
