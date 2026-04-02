@@ -2,6 +2,8 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { CalendarDays, LayoutGrid, Settings, Users } from 'lucide-vue-next';
 import { computed } from 'vue';
+import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
+import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -14,8 +16,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
-import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import { dashboard } from '@/routes';
 import { edit as editProfile } from '@/routes/profile';
 import type { NavItem } from '@/types';

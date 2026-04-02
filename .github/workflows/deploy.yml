@@ -90,6 +90,12 @@ jobs:
     environment: production
 
     steps:
+      - name: Validate deploy secrets
+        run: |
+          test -n "${{ secrets.DEPLOY_HOST }}" || (echo "Missing DEPLOY_HOST secret" && exit 1)
+          test -n "${{ secrets.DEPLOY_USER }}" || (echo "Missing DEPLOY_USER secret" && exit 1)
+          test -n "${{ secrets.DEPLOY_SSH_KEY }}" || (echo "Missing DEPLOY_SSH_KEY secret" && exit 1)
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -99,3 +105,4 @@ jobs:
           script: |
             cd /var/www/homeduty
             bash deploy/deploy.sh
+    

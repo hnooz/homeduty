@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/AppLayout.vue';
 import GroupController from '@/actions/App/Http/Controllers/GroupController';
 import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
 import GroupInvitationController from '@/actions/App/Http/Controllers/GroupInvitationController';
 import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 

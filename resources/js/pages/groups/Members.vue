@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, Link, usePage } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import GroupInvitationController from '@/actions/App/Http/Controllers/GroupInvitationController';
 import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
