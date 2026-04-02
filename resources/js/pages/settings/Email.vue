@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
-import EmailSettingsController from '@/actions/App/Http/Controllers/Settings/EmailSettingsController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/email-settings';
+import { edit, update } from '@/routes/email-settings';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
@@ -46,7 +45,8 @@ const isResend = computed(() => selectedMailer.value === 'resend');
                 />
 
                 <Form
-                    v-bind="EmailSettingsController.update.form()"
+                    method="patch"
+                    :action="update().url"
                     class="space-y-6"
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
