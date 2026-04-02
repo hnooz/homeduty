@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Setting;
 use App\Services\Roles\SyncHomeDutyAuthorization;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->syncAuthorization();
+        $this->applyEmailSettings();
     }
 
     /**
@@ -49,6 +51,36 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+    }
+
+    /**
+     * Override mail configuration from database settings.
+     */
+    protected function applyEmailSettings(): void
+    {
+        if (! Schema::hasTable('settings')) {
+            return;
+        }
+
+        $map = [
+            'mail_mailer' => 'mail.default',
+            'mail_host' => 'mail.mailers.smtp.host',
+            'mail_port' => 'mail.mailers.smtp.port',
+            'mail_username' => 'mail.mailers.smtp.username',
+            'mail_password' => 'mail.mailers.smtp.password',
+            'mail_encryption' => 'mail.mailers.smtp.encryption',
+            'mail_from_address' => 'mail.from.address',
+            'mail_from_name' => 'mail.from.name',
+            'resend_api_key' => 'services.resend.key',
+        ];
+
+        $settings = Setting::query()
+            ->whereIn('key', array_keys($map))
+            ->pluck('value', 'key');
+
+        foreach ($settings as $key => $value) {
+            config([$map[$key] => $value ?: null]);
+        }
     }
 
     protected function syncAuthorization(): void
