@@ -37,7 +37,7 @@ fi
 
 echo "→ Installing Node dependencies and building assets..."
 npm ci --prefer-offline
-npm run build
+NODE_OPTIONS="--max-old-space-size=512" npm run build
 
 if [[ "$FIRST_RUN" == false ]]; then
   echo "→ Putting application in maintenance mode..."
@@ -63,10 +63,10 @@ echo "→ Clearing stale caches..."
 php artisan queue:restart
 
 echo "→ Restarting queue worker..."
-systemctl restart "${WORKER_SERVICE}" || true
+sudo systemctl restart "${WORKER_SERVICE}" || true
 
 echo "→ Reloading PHP-FPM..."
-systemctl reload php8.3-fpm
+sudo systemctl reload php8.3-fpm
 
 echo "→ Taking application out of maintenance mode..."
 php artisan up
