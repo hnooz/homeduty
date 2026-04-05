@@ -1,26 +1,20 @@
 [Unit]
-Description=HomeDuty Queue Worker
-After=network.target mysql.service
-Requires=mysql.service
+Description=HomeDuty Horizon
+After=network.target mysql.service redis-server.service
+Requires=mysql.service redis-server.service
 
 [Service]
 Type=simple
 User=APP_USER
 Group=www-data
 WorkingDirectory=APP_DIR
-ExecStart=/usr/bin/php artisan queue:work \
-    --sleep=3 \
-    --tries=3 \
-    --timeout=90 \
-    --max-time=3600
+ExecStart=/usr/bin/php artisan horizon
+ExecStop=/usr/bin/php artisan horizon:terminate
 Restart=always
 RestartSec=5
 
-; Restart daily to free memory
-RuntimeMaxSec=86400
-
-StandardOutput=append:APP_DIR/storage/logs/queue-worker.log
-StandardError=append:APP_DIR/storage/logs/queue-worker.log
+StandardOutput=append:APP_DIR/storage/logs/horizon.log
+StandardError=append:APP_DIR/storage/logs/horizon.log
 
 [Install]
 WantedBy=multi-user.target

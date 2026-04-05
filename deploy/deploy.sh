@@ -59,10 +59,10 @@ else
   php artisan migrate --force --no-interaction
 fi
 
-echo "→ Clearing stale caches..."
-php artisan queue:restart
+echo "→ Terminating Horizon gracefully..."
+php artisan horizon:terminate || true
 
-echo "→ Restarting queue worker..."
+echo "→ Restarting Horizon..."
 sudo systemctl restart "${WORKER_SERVICE}" || true
 
 echo "→ Reloading PHP-FPM..."

@@ -27,6 +27,16 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,6 +83,10 @@ jobs:
           echo "DB_DATABASE=homeduty_test" >> .env
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=password" >> .env
+          echo "CACHE_STORE=redis" >> .env
+          echo "QUEUE_CONNECTION=redis" >> .env
+          echo "SESSION_DRIVER=redis" >> .env
+          echo "REDIS_HOST=127.0.0.1" >> .env
 
       - name: Generate app key
         run: php artisan key:generate
