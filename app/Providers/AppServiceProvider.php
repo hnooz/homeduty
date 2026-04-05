@@ -89,6 +89,10 @@ class AppServiceProvider extends ServiceProvider
 
     protected function syncAuthorization(): void
     {
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
+
         if (! Schema::hasTable('roles') || ! Schema::hasTable('permissions')) {
             return;
         }

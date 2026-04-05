@@ -65,6 +65,15 @@ php artisan horizon:terminate || true
 echo "→ Restarting Horizon..."
 sudo systemctl restart "${WORKER_SERVICE}" || true
 
+echo "→ Verifying Horizon is running..."
+sleep 2
+if sudo systemctl is-active --quiet "${WORKER_SERVICE}"; then
+  echo "  ✓ Horizon service is active."
+else
+  echo "  ✗ Horizon failed to start! Check: sudo journalctl -u ${WORKER_SERVICE} --no-pager -n 20"
+  sudo journalctl -u "${WORKER_SERVICE}" --no-pager -n 10
+fi
+
 echo "→ Reloading PHP-FPM..."
 sudo systemctl reload php8.3-fpm
 
