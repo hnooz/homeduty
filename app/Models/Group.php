@@ -2,21 +2,34 @@
 
 namespace App\Models;
 
+use App\Observers\GroupObserver;
 use Database\Factories\GroupFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
+#[ObservedBy(GroupObserver::class)]
 #[UseFactory(GroupFactory::class)]
 #[Fillable(['name', 'owner_id'])]
 class Group extends Model
 {
     /** @use HasFactory<GroupFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity, SoftDeletes;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'owner_id'])
+            ->logOnlyDirty();
+    }
 
     public function owner(): BelongsTo
     {
