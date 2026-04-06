@@ -30,4 +30,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('group-invitations/{groupInvitation}/accept', [GroupInvitationController::class, 'accept'])->name('group-invitations.accept');
 });
 
+Route::impersonate();
+
 require __DIR__.'/settings.php';

@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Groups\Pages;
 
 use App\Filament\Resources\Groups\GroupResource;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditGroup extends EditRecord
@@ -14,6 +16,8 @@ class EditGroup extends EditRecord
     {
         return [
             DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
         ];
     }
 }

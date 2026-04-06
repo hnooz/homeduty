@@ -6,45 +6,45 @@ Move email settings out of the user settings area into a dedicated Filament-powe
 
 ### Setup
 
-- [ ] Install Filament (`composer require filament/filament`) and run `php artisan filament:install --panels`
-- [ ] Configure the Filament AdminPanel provider at `app/Providers/Filament/AdminPanelProvider.php`
-- [ ] Set panel path to `/admin` and restrict access to superadmin users via `canAccessPanel()` on the User model
-- [ ] Customize panel branding (app name, logo, colors) to match HomeDuty
+- [x] Install Filament (`composer require filament/filament`) and run `php artisan filament:install --panels`
+- [x] Configure the Filament AdminPanel provider at `app/Providers/Filament/AdminPanelProvider.php`
+- [x] Set panel path to `/admin` and restrict access to superadmin users via `canAccessPanel()` on the User model
+- [x] Customize panel branding (app name, logo, colors) to match HomeDuty
 
 ### Role & Access
 
-- [ ] Add `SuperAdmin` case to `HomeDutyRole` enum
-- [ ] Update `SyncHomeDutyAuthorization` to handle the new role
-- [ ] Add an artisan command to promote a user to superadmin (`php artisan homeduty:promote-admin`)
-- [ ] Implement `FilamentUser` interface on User model with `canAccessPanel()` checking for SuperAdmin role
+- [x] Add `SuperAdmin` case to `HomeDutyRole` enum
+- [x] Update `SyncHomeDutyAuthorization` to handle the new role
+- [x] Add an artisan command to promote a user to superadmin (`php artisan homeduty:promote-admin`)
+- [x] Implement `FilamentUser` interface on User model with `canAccessPanel()` checking for SuperAdmin role
 
 ### Filament Resources
 
-- [ ] `GroupResource` — table with owner name, member count, duty count, created date; sortable/filterable columns; show page with members, duty schedule, invitation history
-- [ ] `UserResource` (Members) — table with role, group name, joined date; sortable/filterable columns
-- [ ] `DutyResource` — table with group, assigned user, schedule, status
-- [ ] `InvitationResource` — table with invitee, group, status, sent date
+- [x] `GroupResource` — table with owner name, member count, duty count, created date; sortable/filterable columns; show page with members, duty schedule, invitation history
+- [x] `UserResource` (Members) — table with role, group name, joined date; sortable/filterable columns
+- [x] `DutyResource` — table with group, assigned user, schedule, status
+- [x] `InvitationResource` — table with invitee, group, status, sent date
 
 ### Email Settings (Custom Filament Page)
 
-- [ ] Create a custom Filament page `App\Filament\Pages\EmailSettings` for mailer configuration
-- [ ] Move email settings logic from `EmailSettingsController` into this page
-- [ ] Remove `/settings/email` routes and the "Email" nav item from the user settings layout
-- [ ] Add a "Send Test Email" action button — dispatches a test mail to the superadmin's address to verify config
+- [x] Create a custom Filament page `App\Filament\Pages\EmailSettings` for mailer configuration
+- [x] Move email settings logic from `EmailSettingsController` into this page
+- [x] Remove `/settings/email` routes and the "Email" nav item from the user settings layout
+- [x] Add a "Send Test Email" action button — dispatches a test mail to the superadmin's address to verify config
 
 ### Dashboard Widgets
 
-- [ ] Stats overview widget: total groups, total members, pending invitations
-- [ ] Mailer status widget: current mailer + whether last mail succeeded
-- [ ] Recent activity widget: latest group creations, duty assignments, invitation activity
+- [x] Stats overview widget: total groups, total members, pending invitations
+- [x] Mailer status widget: current mailer + whether last mail succeeded
+- [x] Recent activity widget: latest group creations, duty assignments, invitation activity
 
 ### Improvements
 
-- [ ] Soft-delete groups instead of hard delete, with a restore action in the GroupResource table
-- [ ] Impersonate users directly from UserResource using a Filament action (e.g. `lab404/laravel-impersonate`)
-- [ ] Audit log using Spatie Activity Log — viewable as a Filament resource or relation manager
-- [ ] Export members/groups as CSV using Filament's built-in export actions
-- [ ] Filament notifications for important events (new group created, failed mail delivery)
+- [x] Soft-delete groups instead of hard delete, with a restore action in the GroupResource table
+- [x] Impersonate users directly from UserResource using a Filament action (e.g. `lab404/laravel-impersonate`)
+- [x] Audit log using Spatie Activity Log — viewable as a Filament resource or relation manager
+- [x] Export members/groups as CSV using Filament's built-in export actions
+- [x] Filament notifications for important events (new group created, failed mail delivery)
 
 ## Mobile Application Preparation
 

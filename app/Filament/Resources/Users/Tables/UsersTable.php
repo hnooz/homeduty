@@ -2,10 +2,15 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Exports\UserExporter;
+use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -42,6 +47,16 @@ class UsersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('impersonate')
+                    ->icon(Heroicon::OutlinedArrowRightOnRectangle)
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->url(fn (User $record): string => route('impersonate', ['id' => $record->id]))
+                    ->visible(fn (User $record): bool => $record->id !== auth()->id()),
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(UserExporter::class),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
