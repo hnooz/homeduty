@@ -30,5 +30,5 @@ it('denies regular users access to the admin panel', function () {
 
 it('redirects guests to the admin login page', function () {
     get('/admin')
-        ->assertRedirect();
+        ->assertRedirect(route('filament.admin.auth.login'));
 });
