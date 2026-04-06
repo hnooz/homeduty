@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Settings\EmailSettingsController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +22,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::inertia('settings/appearance', 'settings/Appearance')->name('appearance.edit');
 
-    Route::get('settings/email', [EmailSettingsController::class, 'edit'])->name('email-settings.edit');
-    Route::patch('settings/email', [EmailSettingsController::class, 'update'])->name('email-settings.update');
+    // Email settings moved to the Filament admin panel
 });
