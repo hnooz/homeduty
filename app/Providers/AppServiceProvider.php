@@ -62,28 +62,30 @@ class AppServiceProvider extends ServiceProvider
             if (! Schema::hasTable('settings')) {
                 return;
             }
+
+            $map = [
+                'mail_mailer' => 'mail.default',
+                'mail_host' => 'mail.mailers.smtp.host',
+                'mail_port' => 'mail.mailers.smtp.port',
+                'mail_username' => 'mail.mailers.smtp.username',
+                'mail_password' => 'mail.mailers.smtp.password',
+                'mail_encryption' => 'mail.mailers.smtp.encryption',
+                'mail_from_address' => 'mail.from.address',
+                'mail_from_name' => 'mail.from.name',
+                'resend_api_key' => 'services.resend.key',
+            ];
+
+            $settings = Setting::query()
+                ->whereIn('key', array_keys($map))
+                ->pluck('value', 'key');
+
+            foreach ($settings as $key => $value) {
+                config([$map[$key] => $value ?: null]);
+            }
         } catch (\Throwable) {
-            return;
-        }
-
-        $map = [
-            'mail_mailer' => 'mail.default',
-            'mail_host' => 'mail.mailers.smtp.host',
-            'mail_port' => 'mail.mailers.smtp.port',
-            'mail_username' => 'mail.mailers.smtp.username',
-            'mail_password' => 'mail.mailers.smtp.password',
-            'mail_encryption' => 'mail.mailers.smtp.encryption',
-            'mail_from_address' => 'mail.from.address',
-            'mail_from_name' => 'mail.from.name',
-            'resend_api_key' => 'services.resend.key',
-        ];
-
-        $settings = Setting::query()
-            ->whereIn('key', array_keys($map))
-            ->pluck('value', 'key');
-
-        foreach ($settings as $key => $value) {
-            config([$map[$key] => $value ?: null]);
+            // Boot must not fail during deploy/composer install when the DB
+            // is unreachable or rows pre-date the encrypted cast. Settings
+            // will be re-applied on the next normal request.
         }
     }
 

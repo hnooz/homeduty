@@ -2,37 +2,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+#[Fillable(['key', 'value'])]
 class Setting extends Model
 {
     use LogsActivity;
 
-    /** @var list<string> */
-    private const array SECRET_KEYS = [
-        'mail_password',
-        'mail_username',
-        'resend_api_key',
-    ];
-
-    protected $fillable = ['key', 'value'];
-
-    protected $casts = [
-        'value' => 'encrypted',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'value' => 'encrypted',
+        ];
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['key'])
             ->logOnlyDirty();
-    }
-
-    public static function isSecretKey(string $key): bool
-    {
-        return in_array($key, self::SECRET_KEYS, true);
     }
 
     /**
