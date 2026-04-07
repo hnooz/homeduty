@@ -33,6 +33,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasRole(HomeDutyRole::SuperAdmin->value);
     }
 
+    public function canImpersonate(): bool
+    {
+        return $this->hasRole(HomeDutyRole::SuperAdmin->value);
+    }
+
+    public function canBeImpersonated(): bool
+    {
+        return ! $this->hasRole(HomeDutyRole::SuperAdmin->value);
+    }
+
     public function ownedGroup(): HasOne
     {
         return $this->hasOne(Group::class, 'owner_id');

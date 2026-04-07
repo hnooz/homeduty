@@ -21,9 +21,18 @@ class UpdateGroupMemberRole
             'role' => $role,
         ])->save();
 
-        $membership->user->syncRoles($role->toHomeDutyRole());
+        $newRole = $role->toHomeDutyRole();
+
+        foreach ([HomeDutyRole::GroupAdmin, HomeDutyRole::GroupMember] as $groupRole) {
+            if ($groupRole !== $newRole && $membership->user->hasRole($groupRole->value)) {
+                $membership->user->removeRole($groupRole->value);
+            }
+        }
+
+        $membership->user->assignRole($newRole->value);
+
         $membership->user->forceFill([
-            'is_group_admin' => $role->toHomeDutyRole() === HomeDutyRole::GroupAdmin,
+            'is_group_admin' => $newRole === HomeDutyRole::GroupAdmin,
         ])->saveQuietly();
 
         return $membership->refresh();

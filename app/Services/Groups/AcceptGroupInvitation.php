@@ -47,9 +47,18 @@ class AcceptGroupInvitation
                 ],
             );
 
-            $user->syncRoles($invitation->role->toHomeDutyRole());
+            $newRole = $invitation->role->toHomeDutyRole();
+
+            foreach ([HomeDutyRole::GroupAdmin, HomeDutyRole::GroupMember] as $groupRole) {
+                if ($groupRole !== $newRole && $user->hasRole($groupRole->value)) {
+                    $user->removeRole($groupRole->value);
+                }
+            }
+
+            $user->assignRole($newRole->value);
+
             $user->forceFill([
-                'is_group_admin' => $invitation->role->toHomeDutyRole() === HomeDutyRole::GroupAdmin,
+                'is_group_admin' => $newRole === HomeDutyRole::GroupAdmin,
             ])->saveQuietly();
 
             $invitation->forceFill([
