@@ -57,6 +57,17 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* HomeDuty brand tokens (DESIGN.md — Stripe-inspired) */
+    --color-brand: #533afd;
+    --color-brand-hover: #4434d4;
+    --color-brand-soft: #eef0ff;
+    --color-brand-border: #b9b9f9;
+    --color-brand-border-soft: #d6d9fc;
+    --color-heading: #061b31;
+    --color-label: #273951;
+    --color-body: #64748d;
+    --color-rule: #e5edf5;
 }
 
 /*
@@ -130,5 +141,101 @@
     }
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+/* HomeDuty shared design system (DESIGN.md) */
+@layer components {
+    .hd-surface {
+        font-family:
+            'sohne-var',
+            'Inter',
+            'SF Pro Display',
+            system-ui,
+            -apple-system,
+            sans-serif;
+        font-feature-settings: 'ss01';
+        font-weight: 300;
+        color: var(--color-heading);
+        background: #fff;
+    }
+
+    .hd-display {
+        @apply m-0 font-light text-heading;
+        font-size: clamp(36px, 4vw, 48px);
+        line-height: 1.05;
+        letter-spacing: -1.2px;
+    }
+
+    .hd-lede {
+        @apply m-0 font-light text-body;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+
+    .hd-eyebrow {
+        @apply inline-flex items-center gap-2 rounded-[4px] px-2.5 py-1 text-xs font-normal text-brand;
+        background: var(--color-brand-soft);
+        border: 1px solid var(--color-brand-border-soft);
+    }
+    .hd-eyebrow::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: var(--color-brand);
+    }
+
+    .hd-card {
+        @apply rounded-lg bg-white p-6;
+        border: 1px solid var(--color-rule);
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            transform 0.15s ease;
+    }
+    .hd-card:hover {
+        border-color: var(--color-brand-border);
+        box-shadow:
+            rgba(50, 50, 93, 0.25) 0px 30px 45px -30px,
+            rgba(0, 0, 0, 0.1) 0px 18px 36px -18px;
+        transform: translateY(-1px);
+    }
+
+    .hd-btn {
+        @apply inline-flex cursor-pointer items-center justify-center rounded-[4px] px-4 py-2 text-sm font-normal no-underline;
+        line-height: 1;
+        border: 1px solid transparent;
+        font-feature-settings: 'ss01';
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease,
+            border-color 0.15s ease;
+    }
+    .hd-btn-lg {
+        @apply px-[22px] py-3 text-[15px];
+    }
+    .hd-btn-primary {
+        background: var(--color-brand);
+        color: #fff;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 14px -6px;
+    }
+    .hd-btn-primary:hover {
+        background: var(--color-brand-hover);
+    }
+    .hd-btn-outlined {
+        color: var(--color-brand);
+        border-color: var(--color-brand-border);
+        background: transparent;
+    }
+    .hd-btn-outlined:hover {
+        background: rgba(83, 58, 253, 0.05);
+    }
+    .hd-btn-ghost {
+        background: transparent;
+        color: var(--color-heading);
+    }
+    .hd-btn-ghost:hover {
+        color: var(--color-brand);
     }
 }
