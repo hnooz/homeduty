@@ -20,6 +20,10 @@ class GroupInvitationResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
+    protected static \UnitEnum|string|null $navigationGroup = 'Group Management';
+
+    protected static ?int $navigationSort = 4;
+
     public static function form(Schema $schema): Schema
     {
         return GroupInvitationForm::configure($schema);

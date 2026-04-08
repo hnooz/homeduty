@@ -72,8 +72,8 @@ Prepare the platform with a versioned REST API and token-based auth so a mobile 
 - [ ] `PATCH /api/v1/groups/{group}` — update group (name, cleaning period — manually editable)
 - [ ] `DELETE /api/v1/groups/{group}` — delete group
 - [ ] `GET /api/v1/groups/{group}/duties` — list duties + slots
-- [ ] `POST /api/v1/groups/{group}/duties` — create a duty
-- [ ] `PATCH /api/v1/groups/{group}/duties/{duty}` — update a duty
+- [ ] `POST /api/v1/groups/{group}/duties` — create a duty (accept `cleaning_period_days` 1–3 when type=cleaning)
+- [ ] `PATCH /api/v1/groups/{group}/duties/{duty}` — update a duty (accept `cleaning_period_days` 1–3 when type=cleaning)
 - [ ] `DELETE /api/v1/groups/{group}/duties/{duty}` — delete a duty
 - [ ] `GET /api/v1/groups/{group}/members` — list members
 - [ ] `PATCH /api/v1/groups/{group}/members/{member}` — update member (role, etc.)

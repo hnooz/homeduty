@@ -35,6 +35,12 @@ class GroupDutyStoreRequest extends FormRequest
         return [
             'type' => ['required', new Enum(DutyType::class)],
             'starts_on' => ['required', 'date'],
+            'cleaning_period_days' => [
+                'nullable',
+                'integer',
+                'between:1,3',
+                Rule::requiredIf(fn (): bool => $this->input('type') === DutyType::Cleaning->value),
+            ],
             'member_ids' => ['required', 'array', 'min:1'],
             'member_ids.*' => [
                 'required',

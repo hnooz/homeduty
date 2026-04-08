@@ -20,6 +20,10 @@ class DutyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
+    protected static \UnitEnum|string|null $navigationGroup = 'Group Management';
+
+    protected static ?int $navigationSort = 2;
+
     public static function form(Schema $schema): Schema
     {
         return DutyForm::configure($schema);

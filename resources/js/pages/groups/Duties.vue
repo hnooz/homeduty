@@ -37,6 +37,7 @@ type Duty = {
     typeLabel: string;
     typeIcon: string;
     startsOn: string | null;
+    cleaningPeriodDays: number | null;
     members: DutyMember[];
     upcomingSlots: DutySlot[];
 };
@@ -73,6 +74,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Tag-style multi-select for create form
 const selectedMemberIds = ref<number[]>([]);
+const selectedType = ref<string>('');
+const cleaningPeriodDays = ref<number>(2);
+const cleaningPeriodOptions = [1, 2, 3];
 
 function toggleMember(id: number): void {
     const index = selectedMemberIds.value.indexOf(id);
@@ -91,15 +95,20 @@ function isMemberSelected(id: number): boolean {
 // Tag-style multi-select for edit form
 const editingDutyId = ref<number | null>(null);
 const editSelectedMemberIds = ref<number[]>([]);
+const editSelectedType = ref<string>('');
+const editCleaningPeriodDays = ref<number>(2);
 
 function startEditing(duty: Duty): void {
     editingDutyId.value = duty.id;
     editSelectedMemberIds.value = duty.members.map((m) => m.id);
+    editSelectedType.value = duty.type;
+    editCleaningPeriodDays.value = duty.cleaningPeriodDays ?? 2;
 }
 
 function cancelEditing(): void {
     editingDutyId.value = null;
     editSelectedMemberIds.value = [];
+    editSelectedType.value = '';
 }
 
 function toggleEditMember(id: number): void {
@@ -309,8 +318,8 @@ function formatDate(dateStr: string): string {
                                                 >
                                                 <select
                                                     :id="`edit-type-${duty.id}`"
+                                                    v-model="editSelectedType"
                                                     name="type"
-                                                    :value="duty.type"
                                                     class="flex h-10 w-full rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm"
                                                 >
                                                     <option
@@ -343,6 +352,41 @@ function formatDate(dateStr: string): string {
                                                     :message="errors.starts_on"
                                                 />
                                             </div>
+                                        </div>
+
+                                        <div
+                                            v-if="
+                                                editSelectedType === 'cleaning'
+                                            "
+                                            class="grid gap-2"
+                                        >
+                                            <Label
+                                                :for="`edit-cleaning-period-${duty.id}`"
+                                                >Cleaning period (days between
+                                                rotations)</Label
+                                            >
+                                            <select
+                                                :id="`edit-cleaning-period-${duty.id}`"
+                                                v-model.number="
+                                                    editCleaningPeriodDays
+                                                "
+                                                name="cleaning_period_days"
+                                                class="flex h-10 w-full rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm"
+                                            >
+                                                <option
+                                                    v-for="n in cleaningPeriodOptions"
+                                                    :key="n"
+                                                    :value="n"
+                                                >
+                                                    Every {{ n }}
+                                                    {{ n === 1 ? 'day' : 'days' }}
+                                                </option>
+                                            </select>
+                                            <InputError
+                                                :message="
+                                                    errors.cleaning_period_days
+                                                "
+                                            />
                                         </div>
 
                                         <!-- Member multi-select (edit) -->
@@ -457,7 +501,12 @@ function formatDate(dateStr: string): string {
                             v-bind="GroupDutyController.store.form(group.id)"
                             class="space-y-5"
                             v-slot="{ errors, processing }"
-                            @success="selectedMemberIds = []"
+                            @success="
+                                () => {
+                                    selectedMemberIds = [];
+                                    selectedType = '';
+                                }
+                            "
                         >
                             <div class="grid gap-2">
                                 <Label for="type">Duty type</Label>
@@ -469,6 +518,7 @@ function formatDate(dateStr: string): string {
                                         :class="'border-indigo-200 hover:border-indigo-300'"
                                     >
                                         <input
+                                            v-model="selectedType"
                                             type="radio"
                                             name="type"
                                             :value="opt.value"
@@ -494,6 +544,34 @@ function formatDate(dateStr: string): string {
                                     required
                                 />
                                 <InputError :message="errors.starts_on" />
+                            </div>
+
+                            <div
+                                v-if="selectedType === 'cleaning'"
+                                class="grid gap-2"
+                            >
+                                <Label for="cleaning_period_days"
+                                    >Cleaning period (days between
+                                    rotations)</Label
+                                >
+                                <select
+                                    id="cleaning_period_days"
+                                    v-model.number="cleaningPeriodDays"
+                                    name="cleaning_period_days"
+                                    class="flex h-10 w-full rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm"
+                                >
+                                    <option
+                                        v-for="n in cleaningPeriodOptions"
+                                        :key="n"
+                                        :value="n"
+                                    >
+                                        Every {{ n }}
+                                        {{ n === 1 ? 'day' : 'days' }}
+                                    </option>
+                                </select>
+                                <InputError
+                                    :message="errors.cleaning_period_days"
+                                />
                             </div>
 
                             <div class="grid gap-2">

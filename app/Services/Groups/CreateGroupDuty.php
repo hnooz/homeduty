@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class CreateGroupDuty
 {
     /**
-     * @param  array{type: string, starts_on: string, member_ids: array<int>}  $attributes
+     * @param  array{type: string, starts_on: string, member_ids: array<int>, cleaning_period_days?: int|null}  $attributes
      */
     public function handle(Group $group, array $attributes): Duty
     {
@@ -22,6 +22,9 @@ class CreateGroupDuty
             $duty = $group->duties()->create([
                 'type' => $attributes['type'],
                 'starts_on' => $attributes['starts_on'],
+                'cleaning_period_days' => $attributes['type'] === DutyType::Cleaning->value
+                    ? ($attributes['cleaning_period_days'] ?? null)
+                    : null,
             ]);
 
             $memberIds = $attributes['member_ids'];
@@ -52,7 +55,9 @@ class CreateGroupDuty
     private function generateSlots(Duty $duty, array $memberIds): void
     {
         $type = DutyType::from($duty->type instanceof DutyType ? $duty->type->value : $duty->type);
-        $gap = $type->gapDays();
+        $gapDays = $type === DutyType::Cleaning && $duty->cleaning_period_days
+            ? $duty->cleaning_period_days
+            : $type->gapDays()['min'];
         $currentDate = Carbon::parse($duty->starts_on);
         $cycleCount = 4;
 
@@ -68,7 +73,7 @@ class CreateGroupDuty
                     'updated_at' => now(),
                 ];
 
-                $currentDate = $currentDate->copy()->addDays($gap['min']);
+                $currentDate = $currentDate->copy()->addDays($gapDays);
             }
         }
 

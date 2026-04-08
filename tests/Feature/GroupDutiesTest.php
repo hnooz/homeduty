@@ -174,6 +174,7 @@ it('allows an admin to update and remove a planned duty', function (): void {
     patch(route('groups.duties.update', [$group, $duty]), [
         'type' => DutyType::Cleaning->value,
         'starts_on' => now()->addDay()->toDateString(),
+        'cleaning_period_days' => 2,
         'member_ids' => [$admin->id, $member->id],
     ])->assertRedirect(route('groups.duties.index', $group));
 

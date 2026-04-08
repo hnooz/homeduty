@@ -43,6 +43,7 @@ class GroupDutyController extends Controller
                     'typeLabel' => $duty->type->label(),
                     'typeIcon' => $duty->type->icon(),
                     'startsOn' => $duty->starts_on?->toDateString(),
+                    'cleaningPeriodDays' => $duty->cleaning_period_days,
                     'members' => $duty->members->map(fn ($user): array => [
                         'id' => $user->id,
                         'name' => $user->name,

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[UseFactory(DutyFactory::class)]
-#[Fillable(['group_id', 'type', 'starts_on'])]
+#[Fillable(['group_id', 'type', 'starts_on', 'cleaning_period_days'])]
 class Duty extends Model
 {
     /** @use HasFactory<DutyFactory> */
@@ -27,6 +27,7 @@ class Duty extends Model
         return [
             'type' => DutyType::class,
             'starts_on' => 'date',
+            'cleaning_period_days' => 'integer',
         ];
     }
 
