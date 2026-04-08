@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\HomeDutyRole;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -21,9 +21,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
 #[UseFactory(UserFactory::class)]
-#[Fillable(['name', 'email', 'phone_number', 'is_group_admin', 'password'])]
+#[Fillable(['name', 'email', 'phone_number', 'is_group_admin', 'password', 'email_verified_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Impersonate, Notifiable, TwoFactorAuthenticatable;

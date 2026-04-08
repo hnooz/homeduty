@@ -2,7 +2,12 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -41,6 +46,29 @@ class RegistrationTest extends TestCase
             'is_group_admin' => true,
         ]);
         $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_self_registered_admins_receive_a_verification_email()
+    {
+        Notification::fake();
+        Event::fake([Registered::class]);
+
+        $this->post(route('register.store'), [
+            'name' => 'Test User',
+            'email' => 'verify@example.com',
+            'phone_number' => '+15551234567',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $user = User::where('email', 'verify@example.com')->firstOrFail();
+
+        $this->assertNull($user->email_verified_at);
+        Event::assertDispatched(Registered::class, fn (Registered $e) => $e->user->is($user));
+
+        Event::fake(false);
+        event(new Registered($user));
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     public function test_phone_number_is_required_for_registration()

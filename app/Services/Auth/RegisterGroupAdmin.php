@@ -31,6 +31,9 @@ class RegisterGroupAdmin
                 'phone_number' => $this->normalizePhoneNumber($attributes['phone_number']),
                 'password' => $attributes['password'],
                 'is_group_admin' => $invitation?->role === GroupMemberRole::Admin || is_null($invitation),
+                // Invited users have already proven email ownership via the invitation link;
+                // self-registered admins must verify via the Fortify Registered event email.
+                'email_verified_at' => $invitation instanceof GroupInvitation ? now() : null,
             ]);
 
             if ($invitation instanceof GroupInvitation) {
