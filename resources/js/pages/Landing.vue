@@ -71,7 +71,20 @@ const features = [
 </script>
 
 <template>
-    <Head title="HomeDuty — Shared chores, fairly handled" />
+    <Head title="HomeDuty — Shared chores, fairly handled">
+        <meta
+            name="description"
+            content="HomeDuty is a quiet, fair chore scheduler for housemates and families. Create a private home group, share cleaning and cooking duties, and let automatic rotations handle the rest."
+        />
+        <meta
+            property="og:title"
+            content="HomeDuty — Shared chores, fairly handled"
+        />
+        <meta
+            property="og:description"
+            content="A quiet, fair chore scheduler for the people you actually live with."
+        />
+    </Head>
 
     <div class="hd-surface flex min-h-screen w-full flex-col">
         <!-- NAV -->

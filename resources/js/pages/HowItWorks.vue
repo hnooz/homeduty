@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { dashboard, home, login, register } from '@/routes';
 
 const steps = [
@@ -33,7 +32,20 @@ const steps = [
 </script>
 
 <template>
-    <Head title="How HomeDuty works" />
+    <Head title="How HomeDuty works — five steps to a fairer household">
+        <meta
+            name="description"
+            content="See how HomeDuty turns household chores into a fair, automatic rotation in five simple steps. Create a group, invite housemates, add duties, and stay in sync."
+        />
+        <meta
+            property="og:title"
+            content="How HomeDuty works — five steps to a fairer household"
+        />
+        <meta
+            property="og:description"
+            content="Five steps to a fairer household: create a group, invite, add duties, rotate, mark done."
+        />
+    </Head>
 
     <div class="hd-surface min-h-screen">
         <header
@@ -46,24 +58,12 @@ const steps = [
             <div
                 class="mx-auto flex max-w-[1000px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4 md:gap-6 md:px-8"
             >
-                <Link
-                    :href="home()"
-                    class="flex items-center gap-2.5 text-heading no-underline"
-                >
-                    <span
-                        class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-brand"
-                        style="
-                            box-shadow: rgba(50, 50, 93, 0.25) 0 6px 12px -6px;
-                        "
-                    >
-                        <AppLogoIcon class="h-[18px] w-[18px] text-white" />
-                    </span>
-                    <span
-                        class="text-base font-normal"
-                        style="letter-spacing: -0.16px"
-                    >
-                        HomeDuty
-                    </span>
+                <Link :href="home()" class="no-underline">
+                    <img
+                        src="/logo.png"
+                        alt="HomeDuty"
+                        class="h-9 w-auto sm:h-12"
+                    />
                 </Link>
 
                 <div class="flex items-center gap-1.5 sm:gap-2.5">
