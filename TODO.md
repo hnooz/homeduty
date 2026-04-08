@@ -62,22 +62,35 @@ Prepare the platform with a versioned REST API and token-based auth so a mobile 
 
 ### API Resources & Endpoints
 
-- [ ] Create Eloquent API Resources for all core models (Group, Duty, User, Invitation, etc.)
+- [ ] Create Eloquent API Resources for all core models: User, Group, GroupMember, GroupInvitation, Duty, DutySlot
 - [ ] `GET /api/v1/user` — authenticated user profile
 - [ ] `PATCH /api/v1/user` — update profile
+- [ ] `GET /api/v1/dashboard` — aggregated dashboard payload (mirrors `DashboardController`)
 - [ ] `GET /api/v1/groups` — list user's groups
-- [ ] `POST /api/v1/groups` — create a group
+- [ ] `POST /api/v1/groups` — create a group (mirrors `GroupController@store`, including initial cleaning period)
 - [ ] `GET /api/v1/groups/{group}` — group detail
-- [ ] `PATCH /api/v1/groups/{group}` — update group
+- [ ] `PATCH /api/v1/groups/{group}` — update group (name, cleaning period — manually editable)
 - [ ] `DELETE /api/v1/groups/{group}` — delete group
-- [ ] `GET /api/v1/groups/{group}/duties` — list duties in a group
+- [ ] `GET /api/v1/groups/{group}/duties` — list duties + slots
 - [ ] `POST /api/v1/groups/{group}/duties` — create a duty
-- [ ] `PATCH /api/v1/duties/{duty}` — update a duty
-- [ ] `DELETE /api/v1/duties/{duty}` — delete a duty
+- [ ] `PATCH /api/v1/groups/{group}/duties/{duty}` — update a duty
+- [ ] `DELETE /api/v1/groups/{group}/duties/{duty}` — delete a duty
+- [ ] `GET /api/v1/groups/{group}/members` — list members
+- [ ] `PATCH /api/v1/groups/{group}/members/{member}` — update member (role, etc.)
+- [ ] `DELETE /api/v1/groups/{group}/members/{member}` — remove member
 - [ ] `POST /api/v1/groups/{group}/invitations` — invite a member
+- [ ] `POST /api/v1/groups/{group}/invitations/{invitation}/accept-direct` — direct-accept flow for existing users
+- [ ] `DELETE /api/v1/groups/{group}/invitations/{invitation}` — revoke invitation
 - [ ] `GET /api/v1/invitations` — list pending invitations for the authenticated user
+- [ ] `GET /api/v1/invitations/{invitation}` — invitation detail (mirrors `group-invitations.show`)
 - [ ] `POST /api/v1/invitations/{invitation}/accept` — accept invitation
 - [ ] `POST /api/v1/invitations/{invitation}/decline` — decline invitation
+
+### Parity with web features
+
+- [ ] Email verification endpoints (Fortify) for self-registered admins
+- [ ] Expose superadmin-only endpoints if mobile needs admin tooling (groups, users, duties, invitations, audit log) — otherwise keep admin in Filament only
+- [ ] Return brand assets / app metadata endpoint (logo URL, favicon) for mobile splash/branding
 
 ### Push Notifications
 
@@ -92,3 +105,10 @@ Prepare the platform with a versioned REST API and token-based auth so a mobile 
 - [ ] Add rate limiting to API routes (`throttle:api` or custom limiter)
 - [ ] Write Pest feature tests for all API endpoints (auth, groups, duties, invitations)
 - [ ] Ensure all API responses follow a consistent JSON structure (data, message, errors)
+
+## General
+
+- [ ] Create group section on superadmin panel
+- [ ] Make cleaning period manually editable (allow entering the period manually)
+- [ ] Make the app responsive
+- [ ] Add SEO (meta tags, titles, descriptions, OG tags, sitemap)
