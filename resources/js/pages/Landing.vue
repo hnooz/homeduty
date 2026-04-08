@@ -86,22 +86,7 @@ const features = [
             <div
                 class="mx-auto flex max-w-[1200px] items-center justify-between gap-6 px-8 py-4"
             >
-                <div class="flex items-center gap-2.5">
-                    <span
-                        class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-brand"
-                        style="
-                            box-shadow: rgba(50, 50, 93, 0.25) 0 6px 12px -6px;
-                        "
-                    >
-                        <AppLogoIcon class="h-[18px] w-[18px] text-white" />
-                    </span>
-                    <span
-                        class="text-base font-normal text-heading"
-                        style="letter-spacing: -0.16px"
-                    >
-                        HomeDuty
-                    </span>
-                </div>
+                <img src="/logo.png" alt="HomeDuty" class="h-12 w-auto" />
 
                 <nav
                     class="hidden items-center gap-7 md:flex"
