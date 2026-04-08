@@ -42,7 +42,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 items-start justify-center p-4 md:p-6">
-            <Card class="w-full max-w-2xl rounded-3xl border-border/70 shadow-sm">
+            <Card
+                class="w-full max-w-2xl rounded-3xl border-border/70 shadow-sm"
+            >
                 <CardHeader>
                     <Heading
                         title="Accept your Home Group invitation"
@@ -50,12 +52,16 @@ const breadcrumbs: BreadcrumbItem[] = [
                     />
                 </CardHeader>
                 <CardContent class="space-y-6">
-                    <div class="rounded-2xl border border-border/70 bg-muted/30 p-5">
+                    <div
+                        class="rounded-2xl border border-border/70 bg-muted/30 p-5"
+                    >
                         <div class="flex flex-wrap items-center gap-2">
                             <p class="text-base font-semibold text-foreground">
                                 {{ invitation.groupName }}
                             </p>
-                            <Badge variant="outline">{{ invitation.roleLabel }}</Badge>
+                            <Badge variant="outline">{{
+                                invitation.roleLabel
+                            }}</Badge>
                         </div>
                         <p class="mt-3 text-sm text-muted-foreground">
                             Invited for {{ invitation.email }}
@@ -64,17 +70,31 @@ const breadcrumbs: BreadcrumbItem[] = [
                             Signed in as {{ page.props.auth.user.email }}
                         </p>
                         <p class="mt-3 text-sm text-muted-foreground">
-                            Expires {{ invitation.expiresAt ? new Date(invitation.expiresAt).toLocaleDateString() : 'soon' }}
+                            Expires
+                            {{
+                                invitation.expiresAt
+                                    ? new Date(
+                                          invitation.expiresAt,
+                                      ).toLocaleDateString()
+                                    : 'soon'
+                            }}
                         </p>
                     </div>
 
-                    <div class="rounded-2xl border border-dashed border-border/80 bg-background/80 p-5 text-sm leading-6 text-muted-foreground">
-                        Accepting this invitation will attach your account to the Home Group and apply the invited role immediately.
+                    <div
+                        class="rounded-2xl border border-dashed border-border/80 bg-background/80 p-5 text-sm leading-6 text-muted-foreground"
+                    >
+                        Accepting this invitation will attach your account to
+                        the Home Group and apply the invited role immediately.
                     </div>
 
                     <div class="flex flex-col gap-3 sm:flex-row">
                         <Form
-                            v-bind="GroupInvitationController.accept.form(invitation.token)"
+                            v-bind="
+                                GroupInvitationController.accept.form(
+                                    invitation.token,
+                                )
+                            "
                             v-slot="{ processing }"
                         >
                             <Button type="submit" :disabled="processing">

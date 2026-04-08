@@ -92,11 +92,17 @@ const user = computed(() => page.props.auth.user);
                             autocomplete="tel"
                             placeholder="Phone number"
                         />
-                        <InputError class="mt-2" :message="errors.phone_number" />
+                        <InputError
+                            class="mt-2"
+                            :message="errors.phone_number"
+                        />
                     </div>
 
-                    <div class="rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground shadow-sm">
-                        Your account is currently set up as the Home Group admin for your household workspace.
+                    <div
+                        class="rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground shadow-sm"
+                    >
+                        Your account is currently set up as the Home Group admin
+                        for your household workspace.
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
@@ -105,7 +111,7 @@ const user = computed(() => page.props.auth.user);
                             <Link
                                 :href="send()"
                                 as="button"
-                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                             >
                                 Click here to resend the verification email.
                             </Link>

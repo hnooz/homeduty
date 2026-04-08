@@ -37,12 +37,18 @@ const props = defineProps<Props>();
             class="flex flex-col gap-6"
         >
             <div class="grid gap-6">
-                <div class="rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground shadow-sm">
+                <div
+                    class="rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground shadow-sm"
+                >
                     <template v-if="props.invitation">
-                        You are joining {{ props.invitation.groupName }} as a {{ props.invitation.roleLabel.toLowerCase() }}. Finish registration with the invited email to accept access automatically.
+                        You are joining {{ props.invitation.groupName }} as a
+                        {{ props.invitation.roleLabel.toLowerCase() }}. Finish
+                        registration with the invited email to accept access
+                        automatically.
                     </template>
                     <template v-else>
-                        You will be registered as the first Home Group owner and can create your household after signing in.
+                        You will be registered as the first Home Group owner and
+                        can create your household after signing in.
                     </template>
                 </div>
 
@@ -138,7 +144,20 @@ const props = defineProps<Props>();
             <div class="text-center text-sm text-muted-foreground">
                 Already have an account?
                 <TextLink
-                    :href="props.invitation ? login({ query: { redirect: register.url({ query: { invitation: props.invitation.token } }) } }) : login()"
+                    :href="
+                        props.invitation
+                            ? login({
+                                  query: {
+                                      redirect: register.url({
+                                          query: {
+                                              invitation:
+                                                  props.invitation.token,
+                                          },
+                                      }),
+                                  },
+                              })
+                            : login()
+                    "
                     class="underline underline-offset-4"
                     :tabindex="7"
                     >Log in</TextLink

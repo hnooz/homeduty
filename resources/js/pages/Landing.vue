@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import { Button } from '@/components/ui/button';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -13,410 +11,715 @@ withDefaults(
         canRegister: true,
     },
 );
-
-const isVisible = ref(false);
-const featuresVisible = ref(false);
-const statsVisible = ref(false);
-
-onMounted(() => {
-    setTimeout(() => {
-        isVisible.value = true;
-    }, 100);
-    
-    setTimeout(() => {
-        featuresVisible.value = true;
-    }, 400);
-    
-    setTimeout(() => {
-        statsVisible.value = true;
-    }, 700);
-});
-
-const features = [
-    {
-        icon: '📋',
-        title: 'Easy Task Assignment',
-        description: 'Assign household duties to family members with just a few clicks.',
-    },
-    {
-        icon: '🔄',
-        title: 'Rotating Schedules',
-        description: 'Automatically rotate chores so everyone shares the workload fairly.',
-    },
-    {
-        icon: '🔔',
-        title: 'Smart Reminders',
-        description: 'Get notified when duties are due, never miss a chore again.',
-    },
-    {
-        icon: '👨‍👩‍👧‍👦',
-        title: 'Family Groups',
-        description: 'Create groups for your household and manage duties together.',
-    },
-    {
-        icon: '📊',
-        title: 'Progress Tracking',
-        description: 'Track completed tasks and see who is contributing the most.',
-    },
-    {
-        icon: '✨',
-        title: 'Gamification',
-        description: 'Earn points and badges for completing duties on time.',
-    },
-];
-
-const stats = [
-    { value: '10K+', label: 'Active Families' },
-    { value: '50K+', label: 'Tasks Completed' },
-    { value: '98%', label: 'Satisfaction Rate' },
-    { value: '24/7', label: 'Available' },
-];
 </script>
 
 <template>
-    <Head title="HomeDuty - Simplify Your Household Chores">
-        <link rel="preconnect" href="https://rsms.me/" />
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-    </Head>
-    
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-        <!-- Navigation -->
-        <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border-b border-slate-200/50 dark:border-slate-700/50">
-            <nav class="mx-auto max-w-7xl px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/25">
-                            <AppLogoIcon class="size-6 text-white" />
-                        </div>
-                        <span class="text-xl font-bold text-slate-900 dark:text-white">HomeDuty</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-3">
-                        <Link
-                            v-if="$page.props.auth.user"
-                            :href="dashboard()"
-                        >
-                            <Button variant="default">
-                                Dashboard
-                            </Button>
-                        </Link>
-                        <template v-else>
-                            <Link :href="login()">
-                                <Button variant="ghost" class="text-slate-700 dark:text-slate-300">
-                                    Log in
-                                </Button>
-                            </Link>
-                            <Link v-if="canRegister" :href="register()">
-                                <Button variant="default" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-0">
-                                    Get Started
-                                </Button>
-                            </Link>
-                        </template>
-                    </div>
+    <Head title="HomeDuty — Shared chores, fairly handled" />
+
+    <div class="page">
+        <!-- NAV -->
+        <header class="nav">
+            <div class="nav-inner">
+                <div class="brand">
+                    <span class="brand-mark">
+                        <AppLogoIcon class="brand-icon" />
+                    </span>
+                    <span class="brand-name">HomeDuty</span>
                 </div>
-            </nav>
+
+                <nav class="nav-links" aria-label="Primary">
+                    <a href="#how">How it works</a>
+                    <a href="#features">Features</a>
+                </nav>
+
+                <div class="nav-cta">
+                    <Link
+                        v-if="$page.props.auth.user"
+                        :href="dashboard()"
+                        class="btn btn-primary"
+                    >
+                        Open dashboard
+                    </Link>
+                    <template v-else>
+                        <Link :href="login()" class="btn btn-ghost">
+                            Sign in
+                        </Link>
+                        <Link
+                            v-if="canRegister"
+                            :href="register()"
+                            class="btn btn-primary"
+                        >
+                            Start now
+                        </Link>
+                    </template>
+                </div>
+            </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="relative pt-32 pb-20 px-6 overflow-hidden">
-            <!-- Animated background elements -->
-            <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute top-20 left-10 w-72 h-72 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob"></div>
-                <div class="absolute top-40 right-10 w-72 h-72 bg-indigo-300 dark:bg-indigo-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-                <div class="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-            </div>
-            
-            <div class="relative mx-auto max-w-5xl text-center">
-                <div 
-                    :class="[
-                        'transition-all duration-1000 ease-out',
-                        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                    ]"
-                >
-                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-sm font-medium mb-6 animate-bounce-slow">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                        </span>
-                        Now available for all families
-                    </span>
-                    
-                    <h1 class="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white leading-tight mb-6">
-                        Household chores,
-                        <span class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
-                            simplified
-                        </span>
-                    </h1>
-                    
-                    <p class="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-                        HomeDuty helps your family stay organized by assigning, tracking, and rotating household duties. 
-                        No more arguments about who does what!
-                    </p>
-                    
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link v-if="canRegister && !$page.props.auth.user" :href="register()">
-                            <Button size="lg" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-0 shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-0.5 text-base px-8">
-                                Start Free Trial
-                                <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </Button>
-                        </Link>
-                        <Link v-if="$page.props.auth.user" :href="dashboard()">
-                            <Button size="lg" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-0 shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-0.5 text-base px-8">
-                                Go to Dashboard
-                            </Button>
-                        </Link>
-                        <Button size="lg" variant="outline" class="text-base px-8 hover:-translate-y-0.5 transition-all duration-300">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
-                            </svg>
-                            Watch Demo
-                        </Button>
-                    </div>
+        <!-- MAIN -->
+        <main class="main">
+            <section class="hero">
+                <div class="eyebrow">
+                    <span class="eyebrow-dot" /> Household coordination,
+                    redesigned
                 </div>
-                
-                <!-- Hero Image/Mockup -->
-                <div 
-                    :class="[
-                        'mt-16 relative transition-all duration-1000 delay-300 ease-out',
-                        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-                    ]"
-                >
-                    <div class="relative mx-auto max-w-4xl">
-                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur-2xl opacity-20 transform scale-95"></div>
-                        <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 md:p-8">
-                            <div class="flex items-center gap-2 mb-4">
-                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-xl p-4 transform hover:scale-105 transition-transform duration-300">
-                                    <div class="text-3xl mb-2">🧹</div>
-                                    <div class="font-semibold text-slate-900 dark:text-white">Vacuum Living Room</div>
-                                    <div class="text-sm text-slate-500 dark:text-slate-400">Assigned to: Mom</div>
-                                    <div class="mt-2 inline-flex items-center px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs">
-                                        ✓ Completed
-                                    </div>
-                                </div>
-                                <div class="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/30 dark:to-rose-900/30 rounded-xl p-4 transform hover:scale-105 transition-transform duration-300">
-                                    <div class="text-3xl mb-2">🍽️</div>
-                                    <div class="font-semibold text-slate-900 dark:text-white">Do the Dishes</div>
-                                    <div class="text-sm text-slate-500 dark:text-slate-400">Assigned to: Dad</div>
-                                    <div class="mt-2 inline-flex items-center px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 text-xs">
-                                        ⏳ In Progress
-                                    </div>
-                                </div>
-                                <div class="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/30 dark:to-blue-900/30 rounded-xl p-4 transform hover:scale-105 transition-transform duration-300">
-                                    <div class="text-3xl mb-2">🛏️</div>
-                                    <div class="font-semibold text-slate-900 dark:text-white">Make the Beds</div>
-                                    <div class="text-sm text-slate-500 dark:text-slate-400">Assigned to: Kids</div>
-                                    <div class="mt-2 inline-flex items-center px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs">
-                                        📅 Upcoming
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Stats Section -->
-        <section class="py-16 px-6">
-            <div 
-                :class="[
-                    'mx-auto max-w-5xl transition-all duration-1000 ease-out',
-                    statsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                ]"
-            >
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <div 
-                        v-for="(stat, index) in stats" 
-                        :key="stat.label"
-                        :style="{ transitionDelay: `${index * 100}ms` }"
-                        class="text-center transform hover:scale-110 transition-all duration-300"
+                <h1 class="display">
+                    Everyone in the house<br />
+                    knows their duty.
+                </h1>
+
+                <p class="lede">
+                    HomeDuty is a quiet, fair scheduler for the people you
+                    actually live with. Create a private group, share the
+                    chores, and let rotations handle the rest — no spreadsheet,
+                    no group-chat arguments, no nagging.
+                </p>
+
+                <div class="cta-row">
+                    <Link
+                        v-if="canRegister && !$page.props.auth.user"
+                        :href="register()"
+                        class="btn btn-primary btn-lg"
                     >
-                        <div class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                            {{ stat.value }}
-                        </div>
-                        <div class="text-slate-600 dark:text-slate-400 mt-2">{{ stat.label }}</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section class="py-20 px-6">
-            <div class="mx-auto max-w-6xl">
-                <div 
-                    :class="[
-                        'text-center mb-16 transition-all duration-1000 ease-out',
-                        featuresVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                    ]"
-                >
-                    <h2 class="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
-                        Everything you need to
-                        <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">manage your home</span>
-                    </h2>
-                    <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                        Powerful features designed to make household management effortless for the whole family.
-                    </p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div 
-                        v-for="(feature, index) in features" 
-                        :key="feature.title"
-                        :class="[
-                            'group p-6 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer',
-                            featuresVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                        ]"
-                        :style="{ transitionDelay: `${index * 100}ms` }"
+                        Start now
+                    </Link>
+                    <Link
+                        v-if="$page.props.auth.user"
+                        :href="dashboard()"
+                        class="btn btn-primary btn-lg"
                     >
-                        <div class="text-4xl mb-4 transform group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">
-                            {{ feature.icon }}
+                        Open dashboard
+                    </Link>
+                    <a href="#how" class="btn btn-outlined btn-lg">
+                        See how it works
+                    </a>
+                </div>
+
+                <ul class="proof">
+                    <li>Private groups</li>
+                    <li class="dot" aria-hidden="true">·</li>
+                    <li>Fair rotation</li>
+                    <li class="dot" aria-hidden="true">·</li>
+                    <li>No app to install</li>
+                </ul>
+            </section>
+
+            <aside class="mockup-wrap" aria-hidden="true">
+                <div class="mockup">
+                    <div class="mock-head">
+                        <div class="mock-dots"><span /><span /><span /></div>
+                        <div class="mock-title">This week · Maple House</div>
+                    </div>
+
+                    <div class="mock-body">
+                        <div class="mock-row">
+                            <div class="mock-cell person">
+                                <span class="avatar a1">A</span>
+                                <span>Ahmed</span>
+                            </div>
+                            <div class="mock-cell">
+                                <span class="badge badge-clean">Cleaning</span>
+                            </div>
+                            <div class="mock-cell day">Mon</div>
+                            <div class="mock-cell status done">Done</div>
                         </div>
-                        <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                            {{ feature.title }}
-                        </h3>
-                        <p class="text-slate-600 dark:text-slate-400">
-                            {{ feature.description }}
-                        </p>
+
+                        <div class="mock-row">
+                            <div class="mock-cell person">
+                                <span class="avatar a2">S</span>
+                                <span>Sara</span>
+                            </div>
+                            <div class="mock-cell">
+                                <span class="badge badge-cook">Cooking</span>
+                            </div>
+                            <div class="mock-cell day">Tue</div>
+                            <div class="mock-cell status done">Done</div>
+                        </div>
+
+                        <div class="mock-row">
+                            <div class="mock-cell person">
+                                <span class="avatar a3">O</span>
+                                <span>Omar</span>
+                            </div>
+                            <div class="mock-cell">
+                                <span class="badge badge-clean">Cleaning</span>
+                            </div>
+                            <div class="mock-cell day">Thu</div>
+                            <div class="mock-cell status pending">Pending</div>
+                        </div>
+
+                        <div class="mock-row">
+                            <div class="mock-cell person">
+                                <span class="avatar a4">L</span>
+                                <span>Lina</span>
+                            </div>
+                            <div class="mock-cell">
+                                <span class="badge badge-cook">Cooking</span>
+                            </div>
+                            <div class="mock-cell day">Fri</div>
+                            <div class="mock-cell status pending">Pending</div>
+                        </div>
+                    </div>
+
+                    <div class="mock-foot">
+                        <span class="rotation">Rotation · Week 14</span>
+                        <span class="next">Next swap → Mon</span>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- CTA Section -->
-        <section class="py-20 px-6">
-            <div class="mx-auto max-w-4xl">
-                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-1">
-                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 animate-gradient-x"></div>
-                    <div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-[calc(1.5rem-4px)] p-12 text-center">
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                            Ready to get started?
-                        </h2>
-                        <p class="text-indigo-100 text-lg mb-8 max-w-xl mx-auto">
-                            Join thousands of families who have transformed their household management with HomeDuty.
-                        </p>
-                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link v-if="canRegister && !$page.props.auth.user" :href="register()">
-                                <Button size="lg" class="bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-lg shadow-indigo-900/25 text-base px-8 hover:-translate-y-0.5 transition-all duration-300">
-                                    Create Free Account
-                                </Button>
-                            </Link>
-                            <Link v-if="$page.props.auth.user" :href="dashboard()">
-                                <Button size="lg" class="bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-lg shadow-indigo-900/25 text-base px-8 hover:-translate-y-0.5 transition-all duration-300">
-                                    Go to Dashboard
-                                </Button>
-                            </Link>
-                            <Link v-else :href="login()">
-                                <Button size="lg" variant="outline" class="border-white/30 text-white hover:bg-white/10 text-base px-8 hover:-translate-y-0.5 transition-all duration-300">
-                                    Sign In
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
+                <div class="chip">
+                    <span class="chip-dot" /> Sara marked Cooking · Done
+                </div>
+            </aside>
+        </main>
+
+        <!-- FEATURE STRIP -->
+        <footer class="strip" id="features">
+            <div class="feat">
+                <div class="feat-title">Fair rotation</div>
+                <div class="feat-desc">
+                    Duties rotate automatically — nobody stays on dishes
+                    forever.
                 </div>
             </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="py-12 px-6 border-t border-slate-200 dark:border-slate-800">
-            <div class="mx-auto max-w-6xl">
-                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div class="flex items-center gap-2">
-                        <div class="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
-                            <AppLogoIcon class="size-5 text-white" />
-                        </div>
-                        <span class="font-semibold text-slate-900 dark:text-white">HomeDuty</span>
-                    </div>
-                    <div class="flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
-                        <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Privacy</a>
-                        <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Terms</a>
-                        <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contact</a>
-                    </div>
-                    <div class="text-sm text-slate-500 dark:text-slate-500">
-                        © 2026 HomeDuty. All rights reserved.
-                    </div>
+            <div class="feat">
+                <div class="feat-title">Private by default</div>
+                <div class="feat-desc">
+                    Built for housemates and families, not enterprise teams.
+                </div>
+            </div>
+            <div class="feat">
+                <div class="feat-title">Track &amp; confirm</div>
+                <div class="feat-desc">
+                    Mark a duty done; everyone in the house sees it instantly.
                 </div>
             </div>
         </footer>
     </div>
 </template>
 
-<style>
-@keyframes blob {
-    0% {
-        transform: translate(0px, 0px) scale(1);
+<style scoped>
+/* ---------- Stripe-inspired tokens (DESIGN.md) ---------- */
+.page {
+    --c-bg: #ffffff;
+    --c-heading: #061b31;
+    --c-label: #273951;
+    --c-body: #64748d;
+    --c-border: #e5edf5;
+    --c-border-purple: #b9b9f9;
+    --c-purple: #533afd;
+    --c-purple-hover: #4434d4;
+    --c-purple-soft: rgba(83, 58, 253, 0.05);
+    --c-success-bg: rgba(21, 190, 83, 0.2);
+    --c-success-border: rgba(21, 190, 83, 0.4);
+    --c-success-text: #108c3d;
+    --c-clean-bg: #eef0ff;
+    --c-clean-text: #2e2b8c;
+    --c-cook-bg: #ffe9f6;
+    --c-cook-text: #b41a72;
+    --shadow-card:
+        rgba(50, 50, 93, 0.25) 0px 30px 45px -30px,
+        rgba(0, 0, 0, 0.1) 0px 18px 36px -18px;
+    --shadow-soft: rgba(23, 23, 23, 0.06) 0px 3px 6px;
+
+    height: 100vh;
+    width: 100vw;
+    background: var(--c-bg);
+    color: var(--c-heading);
+    font-family:
+        'sohne-var',
+        'Inter',
+        'SF Pro Display',
+        system-ui,
+        -apple-system,
+        sans-serif;
+    font-feature-settings: 'ss01';
+    font-weight: 300;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ---------- NAV ---------- */
+.nav {
+    flex: 0 0 auto;
+    border-bottom: 1px solid var(--c-border);
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(12px);
+}
+
+.nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--c-purple);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -6px;
+}
+
+.brand-icon {
+    width: 18px;
+    height: 18px;
+    color: #fff;
+}
+
+.brand-name {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--c-heading);
+    letter-spacing: -0.16px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 28px;
+}
+
+.nav-links a {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--c-heading);
+    text-decoration: none;
+    font-feature-settings: 'ss01';
+    transition: color 0.15s ease;
+}
+.nav-links a:hover {
+    color: var(--c-purple);
+}
+
+.nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-feature-settings: 'ss01';
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.btn-primary {
+    background: var(--c-purple);
+    color: #fff;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 14px -6px;
+}
+.btn-primary:hover {
+    background: var(--c-purple-hover);
+}
+
+.btn-outlined {
+    background: transparent;
+    color: var(--c-purple);
+    border-color: var(--c-border-purple);
+}
+.btn-outlined:hover {
+    background: var(--c-purple-soft);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--c-heading);
+}
+.btn-ghost:hover {
+    color: var(--c-purple);
+}
+
+.btn-lg {
+    padding: 12px 22px;
+    font-size: 15px;
+}
+
+/* ---------- MAIN ---------- */
+.main {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: center;
+    gap: 56px;
+}
+
+/* ---------- HERO ---------- */
+.hero {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 560px;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #eef0ff;
+    color: var(--c-purple);
+    border: 1px solid #d6d9fc;
+    font-size: 12px;
+    font-weight: 400;
+    font-feature-settings: 'ss01';
+}
+.eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--c-purple);
+}
+
+.display {
+    font-size: clamp(40px, 4.4vw, 56px);
+    font-weight: 300;
+    line-height: 1.03;
+    letter-spacing: -1.4px;
+    color: var(--c-heading);
+    margin: 0;
+    font-feature-settings: 'ss01';
+}
+
+.lede {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--c-body);
+    margin: 0;
+    max-width: 520px;
+    font-feature-settings: 'ss01';
+}
+
+.cta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.proof {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0;
+    color: var(--c-body);
+    font-size: 13px;
+    font-weight: 300;
+    font-feature-settings: 'ss01';
+}
+.proof .dot {
+    color: var(--c-border-purple);
+}
+
+/* ---------- MOCKUP ---------- */
+.mockup-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+}
+
+.mockup {
+    width: 100%;
+    max-width: 460px;
+    background: #ffffff;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+
+.mock-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--c-border);
+    background: #fbfcfe;
+}
+.mock-dots {
+    display: inline-flex;
+    gap: 5px;
+}
+.mock-dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: #e5edf5;
+}
+.mock-title {
+    font-size: 12px;
+    color: var(--c-label);
+    font-weight: 400;
+    font-feature-settings: 'ss01';
+    letter-spacing: -0.12px;
+}
+
+.mock-body {
+    padding: 6px 4px;
+}
+
+.mock-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 0.6fr 0.8fr;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f4f9;
+}
+.mock-row:last-child {
+    border-bottom: none;
+}
+
+.mock-cell {
+    font-size: 13px;
+    color: var(--c-label);
+    font-weight: 400;
+    font-feature-settings: 'ss01';
+}
+
+.person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--c-heading);
+}
+
+.avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 400;
+}
+.a1 {
+    background: #533afd;
+}
+.a2 {
+    background: #ea2261;
+}
+.a3 {
+    background: #2874ad;
+}
+.a4 {
+    background: #1c1e54;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 400;
+    font-feature-settings: 'ss01';
+}
+.badge-clean {
+    background: var(--c-clean-bg);
+    color: var(--c-clean-text);
+    border: 1px solid #d6d9fc;
+}
+.badge-cook {
+    background: var(--c-cook-bg);
+    color: var(--c-cook-text);
+    border: 1px solid #ffd7ef;
+}
+
+.day {
+    color: var(--c-body);
+    font-feature-settings: 'tnum';
+}
+
+.status {
+    font-size: 11px;
+    font-feature-settings: 'ss01';
+    justify-self: end;
+    padding: 1px 8px;
+    border-radius: 4px;
+}
+.status.done {
+    background: var(--c-success-bg);
+    color: var(--c-success-text);
+    border: 1px solid var(--c-success-border);
+}
+.status.pending {
+    background: #ffffff;
+    color: var(--c-body);
+    border: 1px solid var(--c-border);
+}
+
+.mock-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--c-border);
+    background: #fbfcfe;
+    font-size: 11px;
+    color: var(--c-body);
+    font-feature-settings: 'ss01';
+}
+.next {
+    color: var(--c-purple);
+}
+
+.chip {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--c-heading);
+    font-weight: 400;
+    font-feature-settings: 'ss01';
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-soft);
+}
+.chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #15be53;
+    box-shadow: 0 0 0 3px rgba(21, 190, 83, 0.18);
+}
+
+/* ---------- STRIP ---------- */
+.strip {
+    flex: 0 0 auto;
+    border-top: 1px solid var(--c-border);
+    background: #fbfcfe;
+}
+
+.strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 22px 32px;
+}
+
+.feat-title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--c-heading);
+    margin-bottom: 4px;
+    font-feature-settings: 'ss01';
+    letter-spacing: -0.14px;
+}
+.feat-desc {
+    font-size: 13px;
+    color: var(--c-body);
+    line-height: 1.4;
+    font-weight: 300;
+    font-feature-settings: 'ss01';
+}
+
+/* ---------- TABLET ---------- */
+@media (max-width: 1024px) {
+    .main {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 24px 24px 0;
+        align-content: center;
     }
-    33% {
-        transform: translate(30px, -50px) scale(1.1);
+    .mockup-wrap {
+        display: none;
     }
-    66% {
-        transform: translate(-20px, 20px) scale(0.9);
+    .display {
+        font-size: 40px;
+        letter-spacing: -0.96px;
+        line-height: 1.08;
     }
-    100% {
-        transform: translate(0px, 0px) scale(1);
+    .lede {
+        font-size: 16px;
+    }
+    .strip {
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        padding: 18px 24px;
+    }
+    .feat:nth-child(3) {
+        display: none;
     }
 }
 
-@keyframes gradient {
-    0%, 100% {
-        background-size: 200% 200%;
-        background-position: left center;
+@media (max-width: 640px) {
+    .nav-links {
+        display: none;
     }
-    50% {
-        background-size: 200% 200%;
-        background-position: right center;
+    .nav-inner {
+        padding: 14px 20px;
     }
-}
-
-@keyframes gradient-x {
-    0%, 100% {
-        background-position: 0% 50%;
+    .main {
+        padding: 16px 20px 0;
     }
-    50% {
-        background-position: 100% 50%;
+    .display {
+        font-size: 32px;
+        letter-spacing: -0.64px;
     }
-}
-
-.animate-blob {
-    animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-    animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-    animation-delay: 4s;
-}
-
-.animate-gradient {
-    animation: gradient 3s ease infinite;
-    background-size: 200% 200%;
-}
-
-.animate-gradient-x {
-    animation: gradient-x 3s ease infinite;
-    background-size: 200% 100%;
-}
-
-.animate-bounce-slow {
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(-5%);
-        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    .cta-row {
+        flex-direction: column;
+        align-items: stretch;
     }
-    50% {
-        transform: translateY(0);
-        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    .btn-lg {
+        width: 100%;
+    }
+    .strip {
+        grid-template-columns: 1fr;
+        padding: 14px 20px;
+    }
+    .feat:nth-child(2),
+    .feat:nth-child(3) {
+        display: none;
     }
 }
 </style>

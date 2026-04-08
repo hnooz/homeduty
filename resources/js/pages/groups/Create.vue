@@ -4,7 +4,13 @@ import GroupController from '@/actions/App/Http/Controllers/GroupController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -28,20 +34,27 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head title="Create Home Group" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-3xl p-4 md:p-6">
-            <section class="rounded-3xl border border-border/70 bg-linear-to-br from-stone-50 via-white to-slate-100 p-6 shadow-sm dark:from-sidebar dark:via-sidebar dark:to-sidebar-accent/40">
+        <div
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-3xl p-4 md:p-6"
+        >
+            <section
+                class="rounded-3xl border border-border/70 bg-linear-to-br from-stone-50 via-white to-slate-100 p-6 shadow-sm"
+            >
                 <Heading
                     title="Create your Home Group"
                     description="Set up the shared household workspace that will own members, schedules, and upcoming duties."
                 />
             </section>
 
-            <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(22rem,1fr)]">
+            <div
+                class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(22rem,1fr)]"
+            >
                 <Card class="rounded-3xl border-border/70 shadow-sm">
                     <CardHeader>
                         <CardTitle>Group details</CardTitle>
                         <CardDescription>
-                            Choose a clear name for the home you and your members live in.
+                            Choose a clear name for the home you and your
+                            members live in.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -78,25 +91,45 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </CardContent>
                 </Card>
 
-                <Card class="rounded-3xl border-border/70 bg-muted/30 shadow-sm">
+                <Card
+                    class="rounded-3xl border-border/70 bg-muted/30 shadow-sm"
+                >
                     <CardHeader>
                         <CardTitle>What happens next</CardTitle>
                         <CardDescription>
-                            Feature 2 creates the base household structure for the rest of HomeDuty.
+                            Feature 2 creates the base household structure for
+                            the rest of HomeDuty.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent class="space-y-4 text-sm leading-6 text-muted-foreground">
+                    <CardContent
+                        class="space-y-4 text-sm leading-6 text-muted-foreground"
+                    >
                         <div>
-                            <p class="font-medium text-foreground">You become the owner</p>
-                            <p>The group is linked to your admin account as the initial owner.</p>
+                            <p class="font-medium text-foreground">
+                                You become the owner
+                            </p>
+                            <p>
+                                The group is linked to your admin account as the
+                                initial owner.
+                            </p>
                         </div>
                         <div>
-                            <p class="font-medium text-foreground">You are added as the first member</p>
-                            <p>Your membership is created immediately with the admin role.</p>
+                            <p class="font-medium text-foreground">
+                                You are added as the first member
+                            </p>
+                            <p>
+                                Your membership is created immediately with the
+                                admin role.
+                            </p>
                         </div>
                         <div>
-                            <p class="font-medium text-foreground">Member invitations come next</p>
-                            <p>Feature 3 will use this group to invite roommates and assign roles.</p>
+                            <p class="font-medium text-foreground">
+                                Member invitations come next
+                            </p>
+                            <p>
+                                Feature 3 will use this group to invite
+                                roommates and assign roles.
+                            </p>
                         </div>
                     </CardContent>
                 </Card>

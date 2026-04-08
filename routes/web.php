@@ -12,6 +12,8 @@ Route::inertia('/', 'Landing', [
     'canRegister' => Features::enabled(Features::registration()),
 ])->name('home');
 
+Route::inertia('/how-it-works', 'HowItWorks')->name('how-it-works');
+
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('groups/create', [GroupController::class, 'create'])->name('groups.create');
