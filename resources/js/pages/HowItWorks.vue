@@ -44,7 +44,7 @@ const steps = [
             "
         >
             <div
-                class="mx-auto flex max-w-[1000px] items-center justify-between gap-6 px-8 py-4"
+                class="mx-auto flex max-w-[1000px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4 md:gap-6 md:px-8"
             >
                 <Link
                     :href="home()"
@@ -66,7 +66,7 @@ const steps = [
                     </span>
                 </Link>
 
-                <div class="flex items-center gap-2.5">
+                <div class="flex items-center gap-1.5 sm:gap-2.5">
                     <Link
                         v-if="$page.props.auth.user"
                         :href="dashboard()"
@@ -86,8 +86,8 @@ const steps = [
             </div>
         </header>
 
-        <main class="mx-auto max-w-[760px] px-8 pt-[72px] pb-24">
-            <section class="mb-14">
+        <main class="mx-auto max-w-[760px] px-4 pt-12 pb-16 sm:px-6 sm:pt-[72px] sm:pb-24 md:px-8">
+            <section class="mb-10 sm:mb-14">
                 <div class="hd-eyebrow mb-[18px]">How it works</div>
                 <h1 class="hd-display mb-4">
                     Five steps to a fairer household.
@@ -102,7 +102,7 @@ const steps = [
                 <li
                     v-for="step in steps"
                     :key="step.n"
-                    class="hd-card grid grid-cols-[64px_1fr] gap-6"
+                    class="hd-card grid grid-cols-[48px_1fr] gap-4 sm:grid-cols-[64px_1fr] sm:gap-6"
                 >
                     <div
                         class="pt-1 text-[28px] leading-none font-light text-brand"
@@ -131,7 +131,7 @@ const steps = [
             </ol>
 
             <section
-                class="px-6 py-12 text-center"
+                class="px-2 py-10 text-center sm:px-6 sm:py-12"
                 style="border-top: 1px solid var(--color-rule)"
             >
                 <h3
@@ -140,7 +140,7 @@ const steps = [
                 >
                     Ready to try it?
                 </h3>
-                <div class="inline-flex items-center gap-3">
+                <div class="flex flex-wrap items-center justify-center gap-3">
                     <Link
                         v-if="!$page.props.auth.user"
                         :href="register()"

@@ -73,7 +73,7 @@ const features = [
 <template>
     <Head title="HomeDuty — Shared chores, fairly handled" />
 
-    <div class="hd-surface flex h-screen w-screen flex-col overflow-hidden">
+    <div class="hd-surface flex min-h-screen w-full flex-col">
         <!-- NAV -->
         <header
             class="flex-none border-b backdrop-blur"
@@ -83,9 +83,13 @@ const features = [
             "
         >
             <div
-                class="mx-auto flex max-w-[1200px] items-center justify-between gap-6 px-8 py-4"
+                class="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4 md:gap-6 md:px-8"
             >
-                <img src="/logo.png" alt="HomeDuty" class="h-12 w-auto" />
+                <img
+                    src="/logo.png"
+                    alt="HomeDuty"
+                    class="h-9 w-auto sm:h-12"
+                />
 
                 <nav
                     class="hidden items-center gap-7 md:flex"
@@ -105,7 +109,7 @@ const features = [
                     </a>
                 </nav>
 
-                <div class="flex items-center gap-2.5">
+                <div class="flex items-center gap-1.5 sm:gap-2.5">
                     <Link
                         v-if="$page.props.auth.user"
                         :href="dashboard()"
@@ -131,9 +135,9 @@ const features = [
 
         <!-- MAIN -->
         <main
-            class="mx-auto grid min-h-0 w-full max-w-[1200px] flex-1 items-center gap-14 px-8 lg:grid-cols-[1.05fr_0.95fr]"
+            class="mx-auto grid w-full max-w-[1200px] flex-1 items-center gap-10 px-4 py-10 sm:px-6 sm:py-12 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:py-0"
         >
-            <section class="flex max-w-[560px] flex-col gap-[22px]">
+            <section class="flex w-full max-w-[560px] flex-col gap-5 sm:gap-[22px]">
                 <div class="hd-eyebrow self-start">
                     Household coordination, redesigned
                 </div>
@@ -141,8 +145,8 @@ const features = [
                 <h1
                     class="m-0 font-light text-heading"
                     style="
-                        font-size: clamp(40px, 4.4vw, 56px);
-                        line-height: 1.03;
+                        font-size: clamp(32px, 6vw, 56px);
+                        line-height: 1.05;
                         letter-spacing: -1.4px;
                     "
                 >
@@ -157,7 +161,7 @@ const features = [
                     no group-chat arguments, no nagging.
                 </p>
 
-                <div class="mt-1 flex items-center gap-3">
+                <div class="mt-1 flex flex-wrap items-center gap-3">
                     <Link
                         v-if="canRegister && !$page.props.auth.user"
                         :href="register()"
@@ -316,7 +320,7 @@ const features = [
         <!-- FEATURE STRIP -->
         <footer
             id="features"
-            class="mx-auto grid w-full max-w-[1200px] flex-none gap-8 border-t px-8 py-[22px] sm:grid-cols-2 lg:grid-cols-3"
+            class="mx-auto grid w-full max-w-[1200px] flex-none gap-6 border-t px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-[22px] md:px-8 lg:grid-cols-3"
             style="border-color: var(--color-rule); background: #fbfcfe"
         >
             <div v-for="f in features" :key="f.title">

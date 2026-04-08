@@ -73,7 +73,7 @@ function formatDate(dateStr: string): string {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
             <!-- Hero welcome -->
-            <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-500 to-indigo-500 p-8 text-white shadow-lg dark:from-indigo-800 dark:via-purple-700 dark:to-indigo-700">
+            <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-500 to-indigo-500 p-6 text-white shadow-lg sm:p-8 dark:from-indigo-800 dark:via-purple-700 dark:to-indigo-700">
                 <div class="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/10"></div>
                 <div class="absolute -bottom-6 -left-6 h-28 w-28 rounded-full bg-white/5"></div>
                 <div class="relative">
