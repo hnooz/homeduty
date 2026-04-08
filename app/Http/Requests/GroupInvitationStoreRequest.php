@@ -29,7 +29,7 @@ class GroupInvitationStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:255'],
-            'email' => ['required', 'string', 'email:rfc,dns,filter', 'max:255'],
+            'email' => ['required', 'string', 'email:rfc,filter', 'max:255'],
             'phone_number' => ['nullable', 'string', 'min:9', 'max:25', 'regex:/^\+?[0-9][0-9\s\-()]{6,24}$/'],
             'role' => ['required', new Enum(GroupMemberRole::class)],
         ];
