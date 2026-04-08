@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { dashboard, home, login, register } from '@/routes';
 
 const steps = [
@@ -59,24 +58,12 @@ const steps = [
             <div
                 class="mx-auto flex max-w-[1000px] items-center justify-between gap-6 px-8 py-4"
             >
-                <Link
-                    :href="home()"
-                    class="flex items-center gap-2.5 text-heading no-underline"
-                >
-                    <span
-                        class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-brand"
-                        style="
-                            box-shadow: rgba(50, 50, 93, 0.25) 0 6px 12px -6px;
-                        "
-                    >
-                        <AppLogoIcon class="h-[18px] w-[18px] text-white" />
-                    </span>
-                    <span
-                        class="text-base font-normal"
-                        style="letter-spacing: -0.16px"
-                    >
-                        HomeDuty
-                    </span>
+                <Link :href="home()" class="no-underline">
+                    <img
+                        src="/logo.png"
+                        alt="HomeDuty"
+                        class="h-9 w-auto sm:h-12"
+                    />
                 </Link>
 
                 <div class="flex items-center gap-2.5">
