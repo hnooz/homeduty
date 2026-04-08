@@ -33,7 +33,20 @@ const steps = [
 </script>
 
 <template>
-    <Head title="How HomeDuty works" />
+    <Head title="How HomeDuty works — five steps to a fairer household">
+        <meta
+            name="description"
+            content="See how HomeDuty turns household chores into a fair, automatic rotation in five simple steps. Create a group, invite housemates, add duties, and stay in sync."
+        />
+        <meta
+            property="og:title"
+            content="How HomeDuty works — five steps to a fairer household"
+        />
+        <meta
+            property="og:description"
+            content="Five steps to a fairer household: create a group, invite, add duties, rotate, mark done."
+        />
+    </Head>
 
     <div class="hd-surface min-h-screen">
         <header
