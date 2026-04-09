@@ -13,16 +13,36 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 #[ObservedBy(GroupObserver::class)]
 #[UseFactory(GroupFactory::class)]
-#[Fillable(['name', 'owner_id'])]
+#[Fillable(['name', 'owner_id', 'invite_token'])]
 class Group extends Model
 {
     /** @use HasFactory<GroupFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::creating(function (Group $group): void {
+            if (blank($group->invite_token)) {
+                $group->invite_token = (string) Str::uuid();
+            }
+        });
+    }
+
+    public function regenerateInviteToken(): void
+    {
+        $this->forceFill(['invite_token' => (string) Str::uuid()])->save();
+    }
+
+    public function inviteUrl(): string
+    {
+        return route('groups.join', ['token' => $this->invite_token]);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

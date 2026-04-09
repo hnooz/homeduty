@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[UseFactory(GroupInvitationFactory::class)]
-#[Fillable(['group_id', 'invited_by_user_id', 'accepted_by_user_id', 'name', 'email', 'phone_number', 'role', 'token', 'expires_at', 'accepted_at'])]
+#[Fillable(['group_id', 'invited_by_user_id', 'accepted_by_user_id', 'name', 'email', 'role', 'token', 'expires_at', 'accepted_at'])]
 class GroupInvitation extends Model
 {
     /** @use HasFactory<GroupInvitationFactory> */

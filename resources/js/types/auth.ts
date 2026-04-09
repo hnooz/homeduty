@@ -2,7 +2,6 @@ export type User = {
     id: number;
     name: string;
     email: string;
-    phone_number: string | null;
     is_group_admin: boolean;
     avatar?: string;
     email_verified_at: string | null;

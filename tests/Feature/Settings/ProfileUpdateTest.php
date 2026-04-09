@@ -38,7 +38,6 @@ class ProfileUpdateTest extends TestCase
             ->patch(route('profile.update'), [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
-                'phone_number' => '+15557654321',
             ]);
 
         $response
@@ -49,7 +48,6 @@ class ProfileUpdateTest extends TestCase
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
-        $this->assertSame('+15557654321', $user->phone_number);
         $this->assertNull($user->email_verified_at);
     }
 
@@ -62,7 +60,6 @@ class ProfileUpdateTest extends TestCase
             ->patch(route('profile.update'), [
                 'name' => 'Test User',
                 'email' => $user->email,
-                'phone_number' => $user->phone_number,
             ]);
 
         $response
@@ -70,25 +67,6 @@ class ProfileUpdateTest extends TestCase
             ->assertRedirect(route('profile.edit'));
 
         $this->assertNotNull($user->refresh()->email_verified_at);
-    }
-
-    public function test_phone_number_must_be_unique_when_updating_profile()
-    {
-        $user = $this->makeUser();
-        $otherUser = $this->makeUser();
-
-        $response = $this
-            ->actingAs($user)
-            ->from(route('profile.edit'))
-            ->patch(route('profile.update'), [
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone_number' => $otherUser->phone_number,
-            ]);
-
-        $response
-            ->assertSessionHasErrors('phone_number')
-            ->assertRedirect(route('profile.edit'));
     }
 
     public function test_user_can_delete_their_account()

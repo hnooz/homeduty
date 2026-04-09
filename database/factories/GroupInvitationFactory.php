@@ -27,7 +27,6 @@ class GroupInvitationFactory extends Factory
             'accepted_by_user_id' => null,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'phone_number' => fake()->e164PhoneNumber(),
             'role' => fake()->randomElement(GroupMemberRole::cases()),
             'token' => (string) Str::uuid(),
             'expires_at' => now()->addDays(7),

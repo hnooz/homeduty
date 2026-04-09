@@ -28,6 +28,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('groups/{group}/members', [GroupMemberController::class, 'index'])->name('groups.members.index');
     Route::patch('groups/{group}/members/{groupMember}', [GroupMemberController::class, 'update'])->name('groups.members.update');
     Route::delete('groups/{group}/members/{groupMember}', [GroupMemberController::class, 'destroy'])->name('groups.members.destroy');
+    Route::post('groups/{group}/invite-link/regenerate', [GroupController::class, 'regenerateInviteLink'])->name('groups.invite-link.regenerate');
+    Route::get('join/{token}', [GroupController::class, 'joinViaLink'])->name('groups.join');
     Route::post('groups/{group}/invitations', [GroupInvitationController::class, 'store'])->name('groups.invitations.store');
     Route::post('groups/{group}/invitations/{groupInvitation}/accept-direct', [GroupInvitationController::class, 'acceptDirect'])->name('groups.invitations.accept-direct');
     Route::delete('groups/{group}/invitations/{groupInvitation}', [GroupInvitationController::class, 'destroy'])->name('groups.invitations.destroy');

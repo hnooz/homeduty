@@ -18,7 +18,6 @@ class UserExporter extends Exporter
             ExportColumn::make('id'),
             ExportColumn::make('name'),
             ExportColumn::make('email'),
-            ExportColumn::make('phone_number'),
             ExportColumn::make('created_at'),
         ];
     }

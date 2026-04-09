@@ -20,9 +20,6 @@ class UserForm
                     ->email()
                     ->required()
                     ->maxLength(255),
-                TextInput::make('phone_number')
-                    ->tel()
-                    ->maxLength(255),
                 Select::make('roles')
                     ->label('Roles')
                     ->multiple()

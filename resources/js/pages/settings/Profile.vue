@@ -80,24 +80,6 @@ const user = computed(() => page.props.auth.user);
                         <InputError class="mt-2" :message="errors.email" />
                     </div>
 
-                    <div class="grid gap-2">
-                        <Label for="phone_number">Phone number</Label>
-                        <Input
-                            id="phone_number"
-                            type="tel"
-                            class="mt-1 block w-full"
-                            name="phone_number"
-                            :default-value="user.phone_number"
-                            required
-                            autocomplete="tel"
-                            placeholder="Phone number"
-                        />
-                        <InputError
-                            class="mt-2"
-                            :message="errors.phone_number"
-                        />
-                    </div>
-
                     <div
                         class="rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm text-muted-foreground shadow-sm"
                     >

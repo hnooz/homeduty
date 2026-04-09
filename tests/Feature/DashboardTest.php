@@ -107,7 +107,6 @@ class DashboardTest extends TestCase
             'invited_by_user_id' => $owner->id,
             'name' => $invitee->name,
             'email' => $invitee->email,
-            'phone_number' => $invitee->phone_number,
             'role' => GroupMemberRole::Member,
             'token' => 'dashboard-invitation-token',
             'expires_at' => now()->addDays(7),

@@ -20,9 +20,6 @@ class GroupInvitationForm
                     ->email()
                     ->required()
                     ->maxLength(255),
-                TextInput::make('phone_number')
-                    ->tel()
-                    ->maxLength(255),
                 Select::make('group_id')
                     ->label('Group')
                     ->relationship('group', 'name')

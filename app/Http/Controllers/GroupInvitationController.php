@@ -84,7 +84,6 @@ class GroupInvitationController extends Controller
             $matchedUser = User::create([
                 'name' => $groupInvitation->name,
                 'email' => $groupInvitation->email,
-                'phone_number' => $groupInvitation->phone_number,
                 'password' => Str::random(32),
             ]);
 

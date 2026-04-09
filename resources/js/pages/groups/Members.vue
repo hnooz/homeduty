@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import GroupController from '@/actions/App/Http/Controllers/GroupController';
 import GroupInvitationController from '@/actions/App/Http/Controllers/GroupInvitationController';
 import GroupMemberController from '@/actions/App/Http/Controllers/GroupMemberController';
 import Heading from '@/components/Heading.vue';
@@ -31,7 +32,6 @@ type GroupMember = {
     userId: number;
     name: string;
     email: string;
-    phoneNumber: string | null;
     role: string;
     roleLabel: string;
     isOwner: boolean;
@@ -41,7 +41,6 @@ type GroupInvitation = {
     token: string;
     name: string;
     email: string;
-    phoneNumber: string | null;
     role: string;
     roleLabel: string;
     expiresAt: string | null;
@@ -54,6 +53,7 @@ type Props = {
         id: number;
         name: string;
         ownerId: number;
+        inviteLink: string | null;
     };
     members: GroupMember[];
     pendingInvitations: GroupInvitation[];
@@ -77,6 +77,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const page = usePage();
 const currentUser = computed(() => page.props.auth.user);
+
+const linkCopied = ref(false);
+
+const copyInviteLink = async (): Promise<void> => {
+    if (!props.group.inviteLink) {
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(props.group.inviteLink);
+        linkCopied.value = true;
+        setTimeout(() => {
+            linkCopied.value = false;
+        }, 2000);
+    } catch {
+        linkCopied.value = false;
+    }
+};
 </script>
 
 <template>
@@ -158,14 +176,6 @@ const currentUser = computed(() => page.props.auth.user);
                                             class="text-sm text-muted-foreground"
                                         >
                                             {{ member.email }}
-                                        </p>
-                                        <p
-                                            class="text-sm text-muted-foreground"
-                                        >
-                                            {{
-                                                member.phoneNumber ??
-                                                'No phone number on file'
-                                            }}
                                         </p>
                                     </div>
 
@@ -288,14 +298,6 @@ const currentUser = computed(() => page.props.auth.user);
                                         <p
                                             class="text-sm text-muted-foreground"
                                         >
-                                            {{
-                                                invitation.phoneNumber ??
-                                                'No phone number supplied'
-                                            }}
-                                        </p>
-                                        <p
-                                            class="text-sm text-muted-foreground"
-                                        >
                                             Expires
                                             {{
                                                 invitation.expiresAt
@@ -383,12 +385,54 @@ const currentUser = computed(() => page.props.auth.user);
                     </Card>
                 </div>
 
-                <Card
-                    v-if="canManageMembers"
-                    class="rounded-3xl border-border/70 shadow-sm"
-                >
-                    <CardHeader>
-                        <CardTitle>Invite a member</CardTitle>
+                <div v-if="canManageMembers" class="space-y-6">
+                    <Card class="rounded-3xl border-border/70 shadow-sm">
+                        <CardHeader>
+                            <CardTitle>Share invite link</CardTitle>
+                            <CardDescription>
+                                Anyone with this link can join the Home Group.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent class="space-y-3">
+                            <Input
+                                :model-value="group.inviteLink ?? ''"
+                                readonly
+                                @focus="
+                                    ($event.target as HTMLInputElement).select()
+                                "
+                            />
+                            <div class="flex flex-wrap gap-2">
+                                <Button
+                                    type="button"
+                                    class="flex-1"
+                                    @click="copyInviteLink"
+                                >
+                                    {{ linkCopied ? 'Copied!' : 'Copy link' }}
+                                </Button>
+                                <Form
+                                    v-bind="
+                                        GroupController.regenerateInviteLink.form(
+                                            group.id,
+                                        )
+                                    "
+                                    v-slot="{ processing }"
+                                >
+                                    <Button
+                                        type="submit"
+                                        variant="outline"
+                                        :disabled="processing"
+                                    >
+                                        <Spinner v-if="processing" />
+                                        Regenerate
+                                    </Button>
+                                </Form>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card class="rounded-3xl border-border/70 shadow-sm">
+                        <CardHeader>
+                            <CardTitle>Invite a member</CardTitle>
                         <CardDescription>
                             Send a seven-day invitation to a roommate, partner,
                             or family member.
@@ -400,11 +444,7 @@ const currentUser = computed(() => page.props.auth.user);
                                 GroupInvitationController.store.form(group.id)
                             "
                             class="space-y-6"
-                            :reset-on-success="[
-                                'name',
-                                'email',
-                                'phone_number',
-                            ]"
+                            :reset-on-success="['name', 'email']"
                             v-slot="{ errors, processing }"
                         >
                             <div class="grid gap-2">
@@ -428,17 +468,6 @@ const currentUser = computed(() => page.props.auth.user);
                                     placeholder="alex@example.com"
                                 />
                                 <InputError :message="errors.email" />
-                            </div>
-
-                            <div class="grid gap-2">
-                                <Label for="phone_number">Phone number</Label>
-                                <Input
-                                    id="phone_number"
-                                    name="phone_number"
-                                    type="tel"
-                                    placeholder="+1 555 123 4567"
-                                />
-                                <InputError :message="errors.phone_number" />
                             </div>
 
                             <div class="grid gap-2">
@@ -469,7 +498,8 @@ const currentUser = computed(() => page.props.auth.user);
                             </Button>
                         </Form>
                     </CardContent>
-                </Card>
+                    </Card>
+                </div>
             </div>
         </div>
     </AppLayout>
