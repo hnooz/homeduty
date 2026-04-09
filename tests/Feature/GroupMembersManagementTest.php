@@ -40,7 +40,6 @@ it('allows a home group owner to invite a new member', function (): void {
     post(route('groups.invitations.store', $group), [
         'name' => 'Alex Rivera',
         'email' => 'alex@example.com',
-        'phone_number' => '+15550001111',
         'role' => GroupMemberRole::Member->value,
     ])->assertRedirect(route('groups.members.index', $group));
 
@@ -102,7 +101,6 @@ it('auto-accepts a matching invitation during registration', function (): void {
     post(route('register.store'), [
         'name' => 'New Member',
         'email' => 'newmember@example.com',
-        'phone_number' => '+15554443333',
         'password' => 'password',
         'password_confirmation' => 'password',
         'invitation_token' => $invitation->token,
@@ -272,7 +270,6 @@ it('creates an account and sends a password reset link when directly accepting a
         'invited_by_user_id' => $owner->id,
         'email' => 'brand-new-member@example.com',
         'name' => 'Brand New Member',
-        'phone_number' => '+15559998888',
         'role' => GroupMemberRole::Member,
     ]);
 
@@ -282,7 +279,6 @@ it('creates an account and sends a password reset link when directly accepting a
     $createdUser = User::query()->where('email', 'brand-new-member@example.com')->firstOrFail();
 
     expect($createdUser->name)->toBe('Brand New Member')
-        ->and($createdUser->phone_number)->toBe('+15559998888')
         ->and($createdUser->hasRole(HomeDutyRole::GroupMember))->toBeTrue();
 
     expect(GroupMember::query()

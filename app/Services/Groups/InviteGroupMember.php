@@ -14,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 class InviteGroupMember
 {
     /**
-     * @param  array{name: string, email: string, phone_number?: string|null, role: GroupMemberRole|string}  $attributes
+     * @param  array{name: string, email: string, role: GroupMemberRole|string}  $attributes
      */
     public function handle(Group $group, User $invitedBy, array $attributes): GroupInvitation
     {
@@ -40,7 +40,6 @@ class InviteGroupMember
             'invited_by_user_id' => $invitedBy->id,
             'name' => trim($attributes['name']),
             'email' => $email,
-            'phone_number' => filled($attributes['phone_number'] ?? null) ? trim((string) $attributes['phone_number']) : null,
             'role' => $role,
             'token' => (string) Str::uuid(),
             'expires_at' => now()->addDays(7),

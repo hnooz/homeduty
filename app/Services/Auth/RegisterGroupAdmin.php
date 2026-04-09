@@ -16,7 +16,7 @@ class RegisterGroupAdmin
     public function __construct(private readonly AcceptGroupInvitation $acceptGroupInvitation) {}
 
     /**
-     * @param  array{name: string, email: string, phone_number: string, password: string, invitation_token?: string|null}  $attributes
+     * @param  array{name: string, email: string, password: string, invitation_token?: string|null}  $attributes
      */
     public function handle(array $attributes): User
     {
@@ -28,7 +28,6 @@ class RegisterGroupAdmin
             $user = User::query()->create([
                 'name' => trim($attributes['name']),
                 'email' => $email,
-                'phone_number' => $this->normalizePhoneNumber($attributes['phone_number']),
                 'password' => $attributes['password'],
                 'is_group_admin' => $invitation?->role === GroupMemberRole::Admin || is_null($invitation),
                 // Invited users have already proven email ownership via the invitation link;
@@ -74,18 +73,5 @@ class RegisterGroupAdmin
         }
 
         return $invitation;
-    }
-
-    private function normalizePhoneNumber(string $phoneNumber): string
-    {
-        $trimmedPhoneNumber = trim($phoneNumber);
-
-        if (str_starts_with($trimmedPhoneNumber, '+')) {
-            $digits = preg_replace('/\D+/', '', Str::after($trimmedPhoneNumber, '+'));
-
-            return '+'.$digits;
-        }
-
-        return preg_replace('/\D+/', '', $trimmedPhoneNumber) ?? $trimmedPhoneNumber;
     }
 }

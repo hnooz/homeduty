@@ -21,7 +21,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
 #[UseFactory(UserFactory::class)]
-#[Fillable(['name', 'email', 'phone_number', 'is_group_admin', 'password', 'email_verified_at'])]
+#[Fillable(['name', 'email', 'is_group_admin', 'password', 'email_verified_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {

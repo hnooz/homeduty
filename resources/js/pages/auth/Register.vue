@@ -90,25 +90,11 @@ const props = defineProps<Props>();
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="phone_number">Phone number</Label>
-                    <Input
-                        id="phone_number"
-                        type="tel"
-                        required
-                        :tabindex="3"
-                        autocomplete="tel"
-                        name="phone_number"
-                        placeholder="+1 555 123 4567"
-                    />
-                    <InputError :message="errors.phone_number" />
-                </div>
-
-                <div class="grid gap-2">
                     <Label for="password">Password</Label>
                     <PasswordInput
                         id="password"
                         required
-                        :tabindex="4"
+                        :tabindex="3"
                         autocomplete="new-password"
                         name="password"
                         placeholder="Password"
@@ -121,7 +107,7 @@ const props = defineProps<Props>();
                     <PasswordInput
                         id="password_confirmation"
                         required
-                        :tabindex="5"
+                        :tabindex="4"
                         autocomplete="new-password"
                         name="password_confirmation"
                         placeholder="Confirm password"
@@ -132,7 +118,7 @@ const props = defineProps<Props>();
                 <Button
                     type="submit"
                     class="mt-2 w-full"
-                    tabindex="6"
+                    tabindex="5"
                     :disabled="processing"
                     data-test="register-user-button"
                 >
@@ -159,7 +145,7 @@ const props = defineProps<Props>();
                             : login()
                     "
                     class="underline underline-offset-4"
-                    :tabindex="7"
+                    :tabindex="6"
                     >Log in</TextLink
                 >
             </div>

@@ -34,7 +34,6 @@ class RegistrationTest extends TestCase
         $response = $this->post(route('register.store'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'phone_number' => '+15551234567',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
@@ -42,7 +41,6 @@ class RegistrationTest extends TestCase
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
-            'phone_number' => '+15551234567',
             'is_group_admin' => true,
         ]);
         $response->assertRedirect(route('dashboard', absolute: false));
@@ -56,7 +54,6 @@ class RegistrationTest extends TestCase
         $this->post(route('register.store'), [
             'name' => 'Test User',
             'email' => 'verify@example.com',
-            'phone_number' => '+15551234567',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
@@ -69,19 +66,5 @@ class RegistrationTest extends TestCase
         Event::fake(false);
         event(new Registered($user));
         Notification::assertSentTo($user, VerifyEmail::class);
-    }
-
-    public function test_phone_number_is_required_for_registration()
-    {
-        $response = $this->from(route('register'))->post(route('register.store'), [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
-
-        $response
-            ->assertSessionHasErrors('phone_number')
-            ->assertRedirect(route('register'));
     }
 }

@@ -37,6 +37,7 @@ class GroupMemberController extends Controller
                 'id' => $group->id,
                 'name' => $group->name,
                 'ownerId' => $group->owner_id,
+                'inviteLink' => $request->user()->can('manageMembers', $group) ? $group->inviteUrl() : null,
             ],
             'members' => $group->memberships
                 ->sortByDesc(fn (GroupMember $membership): bool => $membership->role === GroupMemberRole::Admin)
@@ -46,7 +47,6 @@ class GroupMemberController extends Controller
                     'userId' => $membership->user_id,
                     'name' => $membership->user->name,
                     'email' => $membership->user->email,
-                    'phoneNumber' => $membership->user->phone_number,
                     'role' => $membership->role->value,
                     'roleLabel' => $membership->role->label(),
                     'isOwner' => $membership->group->owner_id === $membership->user_id,
@@ -58,7 +58,6 @@ class GroupMemberController extends Controller
                     'token' => $invitation->token,
                     'name' => $invitation->name,
                     'email' => $invitation->email,
-                    'phoneNumber' => $invitation->phone_number,
                     'role' => $invitation->role->value,
                     'roleLabel' => $invitation->role->label(),
                     'expiresAt' => $invitation->expires_at?->toIso8601String(),
