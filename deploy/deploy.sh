@@ -12,6 +12,7 @@ set -euo pipefail
 APP_DIR="/var/www/homeduty"
 APP_USER="homeduty"
 WORKER_SERVICE="homeduty-worker"
+SCHEDULER_TIMER="homeduty-scheduler.timer"
 
 FIRST_RUN=false
 if [[ "${1:-}" == "--first-run" ]]; then
@@ -64,6 +65,10 @@ php artisan horizon:terminate || true
 
 echo "→ Restarting Horizon..."
 sudo systemctl restart "${WORKER_SERVICE}" || true
+
+echo "→ Ensuring scheduler timer is enabled and running..."
+sudo systemctl daemon-reload || true
+sudo systemctl enable --now "${SCHEDULER_TIMER}" || true
 
 echo "→ Reloading PHP-FPM..."
 sudo systemctl reload php8.3-fpm
