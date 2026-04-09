@@ -4,11 +4,17 @@ namespace App\Policies;
 
 use App\Enums\GroupMemberRole;
 use App\Enums\HomeDutyPermission;
+use App\Enums\HomeDutyRole;
 use App\Models\Group;
 use App\Models\User;
 
 class GroupPolicy
 {
+    public function before(User $user): ?bool
+    {
+        return $user->hasRole(HomeDutyRole::SuperAdmin->value) ? true : null;
+    }
+
     public function viewAny(User $user): bool
     {
         return $user->groupMemberships()->exists() || $user->ownedGroup()->exists();
