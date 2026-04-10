@@ -99,6 +99,11 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        $this->app->make(SyncHomeDutyAuthorization::class)->handle();
+        try {
+            $this->app->make(SyncHomeDutyAuthorization::class)->handle();
+        } catch (\Throwable) {
+            // Boot must not fail if multiple console services start at once.
+            // Authorization sync is idempotent and will be retried automatically.
+        }
     }
 }
