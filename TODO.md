@@ -52,39 +52,39 @@ Prepare the platform with a versioned REST API and token-based auth so a mobile 
 
 ### Authentication (API)
 
-- [ ] Install Laravel Sanctum (`composer require laravel/sanctum`) and publish its config/migrations
-- [ ] Create `routes/api.php` and register it in `bootstrap/app.php`
-- [ ] `POST /api/v1/login` — issue a Sanctum token (email + password + device_name)
-- [ ] `POST /api/v1/register` — register and return a token
-- [ ] `POST /api/v1/logout` — revoke the current token
-- [ ] `POST /api/v1/forgot-password` — send password-reset link
-- [ ] `POST /api/v1/reset-password` — reset password with token
+- [x] Install Laravel Sanctum (`composer require laravel/sanctum`) and publish its config/migrations
+- [x] Create `routes/api.php` and register it in `bootstrap/app.php`
+- [x] `POST /api/v1/auth/login` — issue a Sanctum token (email + password + device_name)
+- [x] `POST /api/v1/auth/register` — register and return a token
+- [x] `POST /api/v1/auth/logout` — revoke the current token
+- [x] `POST /api/v1/auth/forgot-password` — send password-reset link
+- [x] `POST /api/v1/auth/reset-password` — reset password with token
 
 ### API Resources & Endpoints
 
-- [ ] Create Eloquent API Resources for all core models: User, Group, GroupMember, GroupInvitation, Duty, DutySlot
-- [ ] `GET /api/v1/user` — authenticated user profile
-- [ ] `PATCH /api/v1/user` — update profile
-- [ ] `GET /api/v1/dashboard` — aggregated dashboard payload (mirrors `DashboardController`)
-- [ ] `GET /api/v1/groups` — list user's groups
-- [ ] `POST /api/v1/groups` — create a group (mirrors `GroupController@store`, including initial cleaning period)
-- [ ] `GET /api/v1/groups/{group}` — group detail
-- [ ] `PATCH /api/v1/groups/{group}` — update group (name, cleaning period — manually editable)
-- [ ] `DELETE /api/v1/groups/{group}` — delete group
-- [ ] `GET /api/v1/groups/{group}/duties` — list duties + slots
-- [ ] `POST /api/v1/groups/{group}/duties` — create a duty (accept `cleaning_period_days` 1–3 when type=cleaning)
-- [ ] `PATCH /api/v1/groups/{group}/duties/{duty}` — update a duty (accept `cleaning_period_days` 1–3 when type=cleaning)
-- [ ] `DELETE /api/v1/groups/{group}/duties/{duty}` — delete a duty
-- [ ] `GET /api/v1/groups/{group}/members` — list members
-- [ ] `PATCH /api/v1/groups/{group}/members/{member}` — update member (role, etc.)
-- [ ] `DELETE /api/v1/groups/{group}/members/{member}` — remove member
-- [ ] `POST /api/v1/groups/{group}/invitations` — invite a member
-- [ ] `POST /api/v1/groups/{group}/invitations/{invitation}/accept-direct` — direct-accept flow for existing users
-- [ ] `DELETE /api/v1/groups/{group}/invitations/{invitation}` — revoke invitation
-- [ ] `GET /api/v1/invitations` — list pending invitations for the authenticated user
-- [ ] `GET /api/v1/invitations/{invitation}` — invitation detail (mirrors `group-invitations.show`)
-- [ ] `POST /api/v1/invitations/{invitation}/accept` — accept invitation
-- [ ] `POST /api/v1/invitations/{invitation}/decline` — decline invitation
+- [x] Create Eloquent API Resources for all core models: User, Group, GroupMember, GroupInvitation, Duty, DutySlot
+- [x] `GET /api/v1/user` — authenticated user profile
+- [x] `PATCH /api/v1/user` — update profile
+- [x] `GET /api/v1/dashboard` — aggregated dashboard payload (mirrors `DashboardController`)
+- [x] `GET /api/v1/groups` — list user's groups
+- [x] `POST /api/v1/groups` — create a group (mirrors `GroupController@store`, including initial cleaning period)
+- [x] `GET /api/v1/groups/{group}` — group detail
+- [x] `PATCH /api/v1/groups/{group}` — update group (name)
+- [x] `DELETE /api/v1/groups/{group}` — delete group
+- [x] `GET /api/v1/groups/{group}/duties` — list duties + slots
+- [x] `POST /api/v1/groups/{group}/duties` — create a duty (accept `cleaning_period_days` 1–3 when type=cleaning)
+- [x] `PATCH /api/v1/groups/{group}/duties/{duty}` — update a duty (accept `cleaning_period_days` 1–3 when type=cleaning)
+- [x] `DELETE /api/v1/groups/{group}/duties/{duty}` — delete a duty
+- [x] `GET /api/v1/groups/{group}/members` — list members
+- [x] `PATCH /api/v1/groups/{group}/members/{member}` — update member (role, etc.)
+- [x] `DELETE /api/v1/groups/{group}/members/{member}` — remove member
+- [x] `POST /api/v1/groups/{group}/invitations` — invite a member
+- [x] `POST /api/v1/groups/{group}/invitations/{invitation}/accept-direct` — direct-accept flow for existing users
+- [x] `DELETE /api/v1/groups/{group}/invitations/{invitation}` — revoke invitation
+- [x] `GET /api/v1/invitations` — list pending invitations for the authenticated user
+- [x] `GET /api/v1/invitations/{invitation}` — invitation detail (mirrors `group-invitations.show`)
+- [x] `POST /api/v1/invitations/{invitation}/accept` — accept invitation
+- [x] `POST /api/v1/invitations/{invitation}/decline` — decline invitation
 
 ### Parity with web features
 
@@ -101,10 +101,10 @@ Prepare the platform with a versioned REST API and token-based auth so a mobile 
 
 ### Infrastructure & Testing
 
-- [ ] Add API versioning prefix (`/api/v1`) and apply `auth:sanctum` middleware to protected routes
-- [ ] Add rate limiting to API routes (`throttle:api` or custom limiter)
-- [ ] Write Pest feature tests for all API endpoints (auth, groups, duties, invitations)
-- [ ] Ensure all API responses follow a consistent JSON structure (data, message, errors)
+- [x] Add API versioning prefix (`/api/v1`) and apply `auth:sanctum` middleware to protected routes
+- [x] Add rate limiting to API routes (`throttle:api` or custom limiter)
+- [x] Write Pest feature tests for all API endpoints (auth, groups, duties, invitations)
+- [x] Ensure all API responses follow a consistent JSON structure (data, message, errors)
 
 ## General
 
