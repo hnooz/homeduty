@@ -73,6 +73,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(DutySlot::class);
     }
 
+    public function sentSwapRequests(): HasMany
+    {
+        return $this->hasMany(DutySwapRequest::class, 'requester_id');
+    }
+
+    public function receivedSwapRequests(): HasMany
+    {
+        return $this->hasMany(DutySwapRequest::class, 'recipient_id');
+    }
+
     public function hasHomeGroupAdminRole(): bool
     {
         return $this->hasRole(HomeDutyRole::GroupAdmin);

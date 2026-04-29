@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DutySwapRequestController;
 use App\Http\Controllers\Api\V1\GroupController;
 use App\Http\Controllers\Api\V1\GroupDutyController;
 use App\Http\Controllers\Api\V1\GroupInvitationController;
@@ -52,5 +53,9 @@ Route::middleware('throttle:api')->group(function (): void {
         Route::get('invitations/{invitation}', [InvitationController::class, 'show'])->name('api.v1.invitations.show');
         Route::post('invitations/{invitation}/accept', [InvitationController::class, 'accept'])->name('api.v1.invitations.accept');
         Route::post('invitations/{invitation}/decline', [InvitationController::class, 'decline'])->name('api.v1.invitations.decline');
+
+        Route::post('groups/{group}/duty-swap-requests', [DutySwapRequestController::class, 'store'])->name('api.v1.groups.duty-swap-requests.store');
+        Route::post('groups/{group}/duty-swap-requests/{dutySwapRequest}/accept', [DutySwapRequestController::class, 'accept'])->name('api.v1.groups.duty-swap-requests.accept');
+        Route::post('groups/{group}/duty-swap-requests/{dutySwapRequest}/reject', [DutySwapRequestController::class, 'reject'])->name('api.v1.groups.duty-swap-requests.reject');
     });
 });

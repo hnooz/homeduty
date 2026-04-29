@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DutySwapRequestStatus;
 use App\Models\DutySlot;
+use App\Models\DutySwapRequest;
 use App\Models\Group;
 use App\Models\GroupInvitation;
 use Illuminate\Http\Request;
@@ -45,6 +47,37 @@ class DashboardController extends Controller
                 'icon' => $slot->duty->type->icon(),
             ]) : [];
 
+        $incomingSwapRequests = $user ? DutySwapRequest::query()
+            ->where('recipient_id', $user->id)
+            ->where('status', DutySwapRequestStatus::Pending)
+            ->with(['dutySlot.duty.group', 'requester'])
+            ->get()
+            ->map(fn (DutySwapRequest $req) => [
+                'id' => $req->id,
+                'groupId' => $req->dutySlot->duty->group_id,
+                'groupName' => $req->dutySlot->duty->group->name,
+                'requesterName' => $req->requester->name,
+                'dutyType' => $req->dutySlot->duty->type->label(),
+                'dutyIcon' => $req->dutySlot->duty->type->icon(),
+                'date' => $req->dutySlot->date->toDateString(),
+                'message' => $req->message,
+                'createdAt' => $req->created_at?->toIso8601String(),
+            ]) : [];
+
+        $outgoingSwapRequests = $user ? DutySwapRequest::query()
+            ->where('requester_id', $user->id)
+            ->where('status', DutySwapRequestStatus::Pending)
+            ->with(['dutySlot.duty', 'recipient'])
+            ->get()
+            ->map(fn (DutySwapRequest $req) => [
+                'id' => $req->id,
+                'recipientName' => $req->recipient->name,
+                'dutyType' => $req->dutySlot->duty->type->label(),
+                'dutyIcon' => $req->dutySlot->duty->type->icon(),
+                'date' => $req->dutySlot->date->toDateString(),
+                'createdAt' => $req->created_at?->toIso8601String(),
+            ]) : [];
+
         return Inertia::render('Dashboard', [
             'canCreateHomeGroup' => $user?->can('create', Group::class) ?? false,
             'canManageHomeGroupMembers' => $activeGroup ? $user?->can('manageMembers', $activeGroup) ?? false : false,
@@ -71,6 +104,8 @@ class DashboardController extends Controller
                 ]
                 : null,
             'upcomingDuties' => $upcomingDuties,
+            'incomingSwapRequests' => $incomingSwapRequests,
+            'outgoingSwapRequests' => $outgoingSwapRequests,
             'status' => $request->session()->get('status'),
             'homeGroupName' => $request->session()->get('home_group_name'),
         ]);

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['duty_id', 'user_id', 'date', 'notified_day_before', 'notified_same_day'])]
 class DutySlot extends Model
@@ -29,5 +30,10 @@ class DutySlot extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function swapRequests(): HasMany
+    {
+        return $this->hasMany(DutySwapRequest::class);
     }
 }

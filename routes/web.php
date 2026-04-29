@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DutySwapRequestController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupDutyController;
 use App\Http\Controllers\GroupInvitationController;
@@ -35,6 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::delete('groups/{group}/invitations/{groupInvitation}', [GroupInvitationController::class, 'destroy'])->name('groups.invitations.destroy');
     Route::get('group-invitations/{groupInvitation}', [GroupInvitationController::class, 'show'])->name('group-invitations.show');
     Route::post('group-invitations/{groupInvitation}/accept', [GroupInvitationController::class, 'accept'])->name('group-invitations.accept');
+    Route::post('groups/{group}/duty-swap-requests', [DutySwapRequestController::class, 'store'])->name('groups.duty-swap-requests.store');
+    Route::post('groups/{group}/duty-swap-requests/{dutySwapRequest}/accept', [DutySwapRequestController::class, 'accept'])->name('groups.duty-swap-requests.accept');
+    Route::post('groups/{group}/duty-swap-requests/{dutySwapRequest}/reject', [DutySwapRequestController::class, 'reject'])->name('groups.duty-swap-requests.reject');
 });
 
 Route::impersonate();

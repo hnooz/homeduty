@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DutySwapRequestStatus;
 use App\Enums\DutyType;
 use App\Http\Requests\GroupDutyStoreRequest;
 use App\Http\Requests\GroupDutyUpdateRequest;
@@ -26,14 +27,18 @@ class GroupDutyController extends Controller
         $group->load([
             'duties.members',
             'duties.slots.user',
+            'duties.slots.swapRequests' => fn ($query) => $query->where('status', DutySwapRequestStatus::Pending),
             'memberships.user',
         ]);
+
+        $userId = $request->user()->id;
 
         return Inertia::render('groups/Duties', [
             'group' => [
                 'id' => $group->id,
                 'name' => $group->name,
             ],
+            'authUserId' => $userId,
             'duties' => $group->duties
                 ->sortBy('starts_on')
                 ->values()
@@ -52,9 +57,11 @@ class GroupDutyController extends Controller
                         ->where('date', '>=', now()->startOfDay())
                         ->take(8)
                         ->map(fn ($slot): array => [
+                            'id' => $slot->id,
                             'date' => $slot->date->toDateString(),
                             'userName' => $slot->user?->name ?? 'Unassigned',
                             'userId' => $slot->user_id,
+                            'hasPendingSwap' => $slot->swapRequests->isNotEmpty(),
                         ])->values()->all(),
                 ]),
             'memberOptions' => $group->memberships

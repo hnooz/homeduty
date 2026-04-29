@@ -85,6 +85,9 @@ Prepare the platform with a versioned REST API and token-based auth so a mobile 
 - [x] `GET /api/v1/invitations/{invitation}` — invitation detail (mirrors `group-invitations.show`)
 - [x] `POST /api/v1/invitations/{invitation}/accept` — accept invitation
 - [x] `POST /api/v1/invitations/{invitation}/decline` — decline invitation
+- [x] `POST /api/v1/groups/{group}/duty-swap-requests` — request a duty swap with another member
+- [x] `POST /api/v1/groups/{group}/duty-swap-requests/{dutySwapRequest}/accept` — accept a swap request
+- [x] `POST /api/v1/groups/{group}/duty-swap-requests/{dutySwapRequest}/reject` — reject a swap request
 
 ### Parity with web features
 
