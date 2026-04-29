@@ -14,7 +14,7 @@
 
         <meta name="description" content="HomeDuty is a quiet, fair chore scheduler for the people you actually live with. Create a private home group, share duties, and let rotations handle the rest.">
         <meta name="keywords" content="chore scheduler, household chores, roommate app, family duties, cleaning rotation, cooking rotation, shared chores, home management">
-        <meta name="author" content="HomeDuty">
+        <meta name="author" content="Mohamed Idris Musa">
         <meta name="robots" content="index, follow">
         <link rel="canonical" href="{{ url()->current() }}">
 

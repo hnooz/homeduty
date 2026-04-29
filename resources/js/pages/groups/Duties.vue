@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import DutySwapRequestController from '@/actions/App/Http/Controllers/DutySwapRequestController';
 import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -26,9 +27,11 @@ type DutyMember = {
 };
 
 type DutySlot = {
+    id: number;
     date: string;
     userName: string;
     userId: number;
+    hasPendingSwap: boolean;
 };
 
 type Duty = {
@@ -58,6 +61,7 @@ type Props = {
         id: number;
         name: string;
     };
+    authUserId: number;
     duties: Duty[];
     memberOptions: MemberOption[];
     typeOptions: TypeOption[];
@@ -132,6 +136,29 @@ const availableMembers = computed(() =>
 const editAvailableMembers = computed(() =>
     props.memberOptions.filter((m) => !isEditMemberSelected(m.value)),
 );
+
+// Swap request state
+const swappingSlotId = ref<number | null>(null);
+const swapRecipientId = ref<number | null>(null);
+const swapMessage = ref('');
+
+function startSwap(slot: DutySlot): void {
+    swappingSlotId.value = slot.id;
+    swapRecipientId.value = null;
+    swapMessage.value = '';
+}
+
+function cancelSwap(): void {
+    swappingSlotId.value = null;
+    swapRecipientId.value = null;
+    swapMessage.value = '';
+}
+
+function swapRecipientOptions(duty: Duty): MemberOption[] {
+    return duty.members
+        .filter((m) => m.id !== props.authUserId)
+        .map((m) => ({ value: m.id, label: m.name }));
+}
 
 function formatDate(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString(undefined, {
@@ -237,20 +264,181 @@ function formatDate(dateStr: string): string {
                                             v-for="(
                                                 slot, i
                                             ) in duty.upcomingSlots"
-                                            :key="i"
-                                            class="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm"
-                                            :class="
-                                                i === 0
-                                                    ? 'bg-indigo-200/50 font-medium'
-                                                    : ''
-                                            "
+                                            :key="slot.id"
                                         >
-                                            <span class="text-indigo-900">{{
-                                                formatDate(slot.date)
-                                            }}</span>
-                                            <span class="text-indigo-700">{{
-                                                slot.userName
-                                            }}</span>
+                                            <div
+                                                class="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm"
+                                                :class="
+                                                    i === 0
+                                                        ? 'bg-indigo-200/50 font-medium'
+                                                        : ''
+                                                "
+                                            >
+                                                <span class="text-indigo-900">{{
+                                                    formatDate(slot.date)
+                                                }}</span>
+                                                <div
+                                                    class="flex items-center gap-2"
+                                                >
+                                                    <span
+                                                        class="text-indigo-700"
+                                                        >{{
+                                                            slot.userName
+                                                        }}</span
+                                                    >
+                                                    <button
+                                                        v-if="
+                                                            slot.userId ===
+                                                                authUserId &&
+                                                            !slot.hasPendingSwap &&
+                                                            swappingSlotId !==
+                                                                slot.id
+                                                        "
+                                                        type="button"
+                                                        class="rounded-md border border-indigo-300 px-2 py-0.5 text-xs text-indigo-600 transition-colors hover:bg-indigo-100"
+                                                        @click="
+                                                            startSwap(slot)
+                                                        "
+                                                    >
+                                                        Swap
+                                                    </button>
+                                                    <Badge
+                                                        v-if="
+                                                            slot.hasPendingSwap
+                                                        "
+                                                        variant="outline"
+                                                        class="border-amber-300 text-xs text-amber-700"
+                                                    >
+                                                        Swap pending
+                                                    </Badge>
+                                                </div>
+                                            </div>
+
+                                            <!-- Inline swap request form -->
+                                            <div
+                                                v-if="
+                                                    swappingSlotId === slot.id
+                                                "
+                                                class="mt-1 rounded-xl border border-indigo-200 bg-white p-3"
+                                            >
+                                                <Form
+                                                    v-bind="
+                                                        DutySwapRequestController.store.post(
+                                                            group.id,
+                                                        )
+                                                    "
+                                                    class="space-y-3"
+                                                    v-slot="{
+                                                        errors,
+                                                        processing,
+                                                    }"
+                                                    @success="cancelSwap()"
+                                                >
+                                                    <input
+                                                        type="hidden"
+                                                        name="duty_slot_id"
+                                                        :value="slot.id"
+                                                    />
+                                                    <div class="grid gap-1.5">
+                                                        <Label
+                                                            :for="`swap-recipient-${slot.id}`"
+                                                            class="text-xs"
+                                                            >Assign
+                                                            to</Label
+                                                        >
+                                                        <select
+                                                            :id="`swap-recipient-${slot.id}`"
+                                                            v-model.number="
+                                                                swapRecipientId
+                                                            "
+                                                            name="recipient_id"
+                                                            class="flex h-9 w-full rounded-lg border border-indigo-200 bg-white px-3 py-1.5 text-sm"
+                                                        >
+                                                            <option
+                                                                :value="null"
+                                                                disabled
+                                                            >
+                                                                Select a
+                                                                member...
+                                                            </option>
+                                                            <option
+                                                                v-for="opt in swapRecipientOptions(
+                                                                    duty,
+                                                                )"
+                                                                :key="opt.value"
+                                                                :value="
+                                                                    opt.value
+                                                                "
+                                                            >
+                                                                {{
+                                                                    opt.label
+                                                                }}
+                                                            </option>
+                                                        </select>
+                                                        <InputError
+                                                            :message="
+                                                                errors.recipient_id
+                                                            "
+                                                        />
+                                                    </div>
+                                                    <div class="grid gap-1.5">
+                                                        <Label
+                                                            :for="`swap-message-${slot.id}`"
+                                                            class="text-xs"
+                                                            >Message
+                                                            (optional)</Label
+                                                        >
+                                                        <Input
+                                                            :id="`swap-message-${slot.id}`"
+                                                            v-model="
+                                                                swapMessage
+                                                            "
+                                                            name="message"
+                                                            type="text"
+                                                            placeholder="e.g. I have an appointment that day"
+                                                            class="h-9 text-sm"
+                                                        />
+                                                        <InputError
+                                                            :message="
+                                                                errors.message
+                                                            "
+                                                        />
+                                                    </div>
+                                                    <InputError
+                                                        :message="
+                                                            errors.duty_slot_id
+                                                        "
+                                                    />
+                                                    <div class="flex gap-2">
+                                                        <Button
+                                                            type="submit"
+                                                            size="sm"
+                                                            :disabled="
+                                                                processing ||
+                                                                !swapRecipientId
+                                                            "
+                                                            class="bg-indigo-600 hover:bg-indigo-700"
+                                                        >
+                                                            <Spinner
+                                                                v-if="
+                                                                    processing
+                                                                "
+                                                            />
+                                                            Send request
+                                                        </Button>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="sm"
+                                                            @click="
+                                                                cancelSwap()
+                                                            "
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                    </div>
+                                                </Form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

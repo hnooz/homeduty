@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import DutySwapRequestController from '@/actions/App/Http/Controllers/DutySwapRequestController';
 import GroupController from '@/actions/App/Http/Controllers/GroupController';
 import GroupDutyController from '@/actions/App/Http/Controllers/GroupDutyController';
 import GroupInvitationController from '@/actions/App/Http/Controllers/GroupInvitationController';
@@ -16,6 +17,27 @@ type UpcomingDuty = {
     date: string;
     type: string;
     icon: string;
+};
+
+type IncomingSwapRequest = {
+    id: number;
+    groupId: number;
+    groupName: string;
+    requesterName: string;
+    dutyType: string;
+    dutyIcon: string;
+    date: string;
+    message: string | null;
+    createdAt: string;
+};
+
+type OutgoingSwapRequest = {
+    id: number;
+    recipientName: string;
+    dutyType: string;
+    dutyIcon: string;
+    date: string;
+    createdAt: string;
 };
 
 type Props = {
@@ -40,6 +62,8 @@ type Props = {
         expiresAt: string | null;
     } | null;
     upcomingDuties: UpcomingDuty[];
+    incomingSwapRequests: IncomingSwapRequest[];
+    outgoingSwapRequests: OutgoingSwapRequest[];
     status?: string;
     homeGroupName?: string;
 };
@@ -193,6 +217,76 @@ function formatDate(dateStr: string): string {
                     </div>
                 </section>
             </div>
+
+            <!-- Incoming swap requests -->
+            <section v-if="incomingSwapRequests.length" class="rounded-2xl border-2 border-amber-300 bg-amber-50/50 shadow-sm dark:border-amber-700 dark:bg-amber-950/20">
+                <div class="border-b border-amber-200 px-6 py-4 dark:border-amber-800">
+                    <h2 class="font-semibold text-foreground">Duty Swap Requests</h2>
+                    <p class="text-xs text-muted-foreground">Members are asking you to take their duty</p>
+                </div>
+                <div class="space-y-3 p-6">
+                    <div
+                        v-for="req in incomingSwapRequests"
+                        :key="req.id"
+                        class="flex flex-col gap-3 rounded-xl border border-amber-200 bg-white p-4 dark:border-amber-800 dark:bg-amber-950/30 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <div class="flex items-start gap-3">
+                            <span class="text-xl">{{ req.dutyIcon }}</span>
+                            <div>
+                                <p class="text-sm font-medium text-foreground">
+                                    {{ req.requesterName }} wants you to take their <span class="font-semibold">{{ req.dutyType }}</span> duty
+                                </p>
+                                <p class="text-xs text-muted-foreground">
+                                    {{ formatDate(req.date) }} &middot; {{ req.groupName }}
+                                </p>
+                                <p v-if="req.message" class="mt-1 text-xs text-muted-foreground italic">
+                                    "{{ req.message }}"
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <Form v-bind="DutySwapRequestController.accept.post({ group: req.groupId, dutySwapRequest: req.id })" v-slot="{ processing }">
+                                <Button type="submit" size="sm" :disabled="processing" class="bg-green-600 hover:bg-green-700">
+                                    <Spinner v-if="processing" />
+                                    Accept
+                                </Button>
+                            </Form>
+                            <Form v-bind="DutySwapRequestController.reject.post({ group: req.groupId, dutySwapRequest: req.id })" v-slot="{ processing }">
+                                <Button type="submit" variant="outline" size="sm" :disabled="processing">
+                                    <Spinner v-if="processing" />
+                                    Decline
+                                </Button>
+                            </Form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Outgoing swap requests -->
+            <section v-if="outgoingSwapRequests.length" class="rounded-2xl border border-border/60 bg-card shadow-sm">
+                <div class="border-b border-border/40 px-6 py-4">
+                    <h2 class="font-semibold text-foreground">Your Pending Swap Requests</h2>
+                    <p class="text-xs text-muted-foreground">Waiting for a response</p>
+                </div>
+                <div class="space-y-3 p-6">
+                    <div
+                        v-for="req in outgoingSwapRequests"
+                        :key="req.id"
+                        class="flex items-center gap-4 rounded-xl border border-border/40 bg-background/60 px-4 py-3"
+                    >
+                        <span class="text-xl">{{ req.dutyIcon }}</span>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-foreground">
+                                {{ req.dutyType }} duty on {{ formatDate(req.date) }}
+                            </p>
+                            <p class="text-xs text-muted-foreground">
+                                Sent to {{ req.recipientName }}
+                            </p>
+                        </div>
+                        <Badge variant="outline" class="border-amber-300 text-amber-700">Pending</Badge>
+                    </div>
+                </div>
+            </section>
 
             <!-- Pending invitation -->
             <section v-if="pendingInvitation" class="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-6 shadow-sm dark:border-indigo-700 dark:bg-indigo-950/20">
