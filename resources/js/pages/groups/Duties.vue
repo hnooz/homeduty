@@ -142,7 +142,7 @@ const swappingSlotId = ref<number | null>(null);
 const swapRecipientId = ref<number | null>(null);
 const swapMessage = ref('');
 
-function startSwap(slot: DutySlot, duty: Duty): void {
+function startSwap(slot: DutySlot): void {
     swappingSlotId.value = slot.id;
     swapRecipientId.value = null;
     swapMessage.value = '';
@@ -297,10 +297,7 @@ function formatDate(dateStr: string): string {
                                                         type="button"
                                                         class="rounded-md border border-indigo-300 px-2 py-0.5 text-xs text-indigo-600 transition-colors hover:bg-indigo-100"
                                                         @click="
-                                                            startSwap(
-                                                                slot,
-                                                                duty,
-                                                            )
+                                                            startSwap(slot)
                                                         "
                                                     >
                                                         Swap
