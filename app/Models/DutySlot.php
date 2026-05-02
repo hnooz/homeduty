@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['duty_id', 'user_id', 'date', 'notified_day_before', 'notified_same_day'])]
+#[Fillable(['duty_id', 'user_id', 'date', 'notified_same_day'])]
 class DutySlot extends Model
 {
     /**
@@ -17,7 +17,6 @@ class DutySlot extends Model
     {
         return [
             'date' => 'date',
-            'notified_day_before' => 'boolean',
             'notified_same_day' => 'boolean',
         ];
     }

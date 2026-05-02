@@ -2,6 +2,7 @@
 
 namespace App\Services\Groups;
 
+use App\Enums\HomeDutyRole;
 use App\Models\GroupMember;
 use Illuminate\Validation\ValidationException;
 
@@ -17,10 +18,19 @@ class RemoveGroupMember
 
         $user = $membership->user;
 
-        $membership->delete();
+        GroupMember::query()->whereKey($membership->id)->delete();
 
         if (! $user->ownedGroup()->exists() && ! $user->groupMemberships()->exists()) {
-            $user->syncRoles([]);
+            if ($user->hasRole(HomeDutyRole::SuperAdmin->value)) {
+                foreach ([HomeDutyRole::GroupOwner, HomeDutyRole::GroupAdmin, HomeDutyRole::GroupMember] as $groupRole) {
+                    if ($user->hasRole($groupRole->value)) {
+                        $user->removeRole($groupRole->value);
+                    }
+                }
+            } else {
+                $user->syncRoles([]);
+            }
+
             $user->forceFill([
                 'is_group_admin' => false,
             ])->saveQuietly();

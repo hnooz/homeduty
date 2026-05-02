@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\GroupMemberRole;
+use App\Enums\HomeDutyRole;
 use App\Http\Requests\GroupStoreRequest;
 use App\Models\Group;
 use App\Services\Groups\CreateHomeGroup;
@@ -45,6 +46,7 @@ class GroupController extends Controller
     {
         $group = Group::query()->where('invite_token', $token)->firstOrFail();
         $user = $request->user();
+        $isSuperAdmin = $user->hasRole(HomeDutyRole::SuperAdmin->value);
 
         if ($group->owner_id === $user->id) {
             return to_route('groups.members.index', $group);
@@ -55,18 +57,25 @@ class GroupController extends Controller
                 ->with('status', 'already-a-member');
         }
 
-        if ($user->ownedGroup()->exists() || $user->groupMemberships()->exists()) {
+        if (! $isSuperAdmin && ($user->ownedGroup()->exists() || $user->groupMemberships()->exists())) {
             return to_route('dashboard')
                 ->with('status', 'already-in-another-group');
         }
 
-        DB::transaction(function () use ($group, $user): void {
+        DB::transaction(function () use ($group, $user, $isSuperAdmin): void {
             $group->memberships()->create([
                 'user_id' => $user->id,
                 'role' => GroupMemberRole::Member,
             ]);
 
             $newRole = GroupMemberRole::Member->toHomeDutyRole();
+
+            if ($isSuperAdmin) {
+                $user->assignRole($newRole->value);
+
+                return;
+            }
+
             $user->syncRoles($newRole->value);
             $user->forceFill(['is_group_admin' => false])->saveQuietly();
         });

@@ -12,6 +12,8 @@ class AcceptGroupInvitation
 {
     public function handle(GroupInvitation $invitation, User $user): void
     {
+        $isSuperAdmin = $user->hasRole(HomeDutyRole::SuperAdmin->value);
+
         if (! $invitation->isPending()) {
             throw ValidationException::withMessages([
                 'invitation' => 'This invitation is no longer active.',
@@ -24,19 +26,19 @@ class AcceptGroupInvitation
             ]);
         }
 
-        if ($user->ownedGroup()->whereKeyNot($invitation->group_id)->exists()) {
+        if (! $isSuperAdmin && $user->ownedGroup()->whereKeyNot($invitation->group_id)->exists()) {
             throw ValidationException::withMessages([
                 'invitation' => 'This account already owns another Home Group and cannot join a second one.',
             ]);
         }
 
-        if ($user->groupMemberships()->where('group_id', '!=', $invitation->group_id)->exists()) {
+        if (! $isSuperAdmin && $user->groupMemberships()->where('group_id', '!=', $invitation->group_id)->exists()) {
             throw ValidationException::withMessages([
                 'invitation' => 'This account already belongs to another Home Group and cannot join a second one.',
             ]);
         }
 
-        DB::transaction(function () use ($invitation, $user): void {
+        DB::transaction(function () use ($invitation, $user, $isSuperAdmin): void {
             $invitation->group->memberships()->updateOrCreate(
                 [
                     'group_id' => $invitation->group_id,
@@ -58,7 +60,7 @@ class AcceptGroupInvitation
             $user->assignRole($newRole->value);
 
             $user->forceFill([
-                'is_group_admin' => $newRole === HomeDutyRole::GroupAdmin,
+                'is_group_admin' => $isSuperAdmin || $newRole === HomeDutyRole::GroupAdmin,
             ])->saveQuietly();
 
             $invitation->forceFill([

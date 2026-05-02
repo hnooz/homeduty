@@ -21,7 +21,6 @@ class DutySlotResource extends JsonResource
             'duty_id' => $this->duty_id,
             'user_id' => $this->user_id,
             'date' => $this->date?->toDateString(),
-            'notified_day_before' => (bool) $this->notified_day_before,
             'notified_same_day' => (bool) $this->notified_same_day,
             'user' => new UserResource($this->whenLoaded('user')),
         ];

@@ -12,10 +12,7 @@ class DutyReminderNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(
-        private readonly DutySlot $slot,
-        private readonly string $timing,
-    ) {}
+    public function __construct(private readonly DutySlot $slot) {}
 
     /**
      * @return array<int, string>
@@ -32,18 +29,10 @@ class DutyReminderNotification extends Notification implements ShouldQueue
         $type = $duty->type->label();
         $dateFormatted = $this->slot->date->toFormattedDateString();
 
-        $subject = $this->timing === 'day_before'
-            ? "{$type} duty tomorrow — {$groupName}"
-            : "{$type} duty today — {$groupName}";
-
-        $line = $this->timing === 'day_before'
-            ? "Your **{$type}** duty for **{$groupName}** is scheduled for tomorrow, **{$dateFormatted}**."
-            : "Your **{$type}** duty for **{$groupName}** is today, **{$dateFormatted}**.";
-
         return (new MailMessage)
-            ->subject($subject)
+            ->subject("{$type} duty today — {$groupName}")
             ->greeting("Hello {$notifiable->name},")
-            ->line($line)
+            ->line("Your **{$type}** duty for **{$groupName}** is today, **{$dateFormatted}**.")
             ->action('View duties', route('groups.duties.index', $duty->group_id));
     }
 }

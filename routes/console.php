@@ -8,4 +8,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('duties:send-reminders')->twiceDaily(first: 8, second: 15);
+Schedule::command('duties:send-reminders')->dailyAt('08:00');

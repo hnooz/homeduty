@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Enums\GroupMemberRole;
 use App\Enums\HomeDutyRole;
+use App\Models\Group;
 use App\Models\User;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +68,28 @@ class UserForm
                             ->mapWithKeys(fn (HomeDutyRole $role) => [$role->value => $role->label()])
                     )
                     ->preload(),
+                Select::make('group_id')
+                    ->label('Group')
+                    ->options(fn () => Group::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->dehydrated(false)
+                    ->default(fn (?User $record): ?int => $record?->groupMemberships()->value('group_id'))
+                    ->afterStateHydrated(function (Select $component, ?User $record): void {
+                        $component->state($record?->groupMemberships()->value('group_id'));
+                    }),
+                Select::make('group_role')
+                    ->label('Group role')
+                    ->options(GroupMemberRole::class)
+                    ->default(fn (?User $record) => $record?->groupMemberships()->value('role') ?? GroupMemberRole::Member->value)
+                    ->visible(fn (Get $get): bool => filled($get('group_id')))
+                    ->required(fn (Get $get): bool => filled($get('group_id')))
+                    ->dehydrated(false)
+                    ->afterStateHydrated(function (Select $component, ?User $record): void {
+                        $value = $record?->groupMemberships()->value('role');
+                        $component->state($value instanceof GroupMemberRole ? $value->value : ($value ?? GroupMemberRole::Member->value));
+                    }),
             ]);
     }
 }

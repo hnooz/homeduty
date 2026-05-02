@@ -5,7 +5,11 @@ namespace App\Filament\Resources\Duties;
 use App\Filament\Resources\Duties\Pages\CreateDuty;
 use App\Filament\Resources\Duties\Pages\EditDuty;
 use App\Filament\Resources\Duties\Pages\ListDuties;
+use App\Filament\Resources\Duties\Pages\ViewDuty;
+use App\Filament\Resources\Duties\RelationManagers\MembersRelationManager;
+use App\Filament\Resources\Duties\RelationManagers\SlotsRelationManager;
 use App\Filament\Resources\Duties\Schemas\DutyForm;
+use App\Filament\Resources\Duties\Schemas\DutyInfolist;
 use App\Filament\Resources\Duties\Tables\DutiesTable;
 use App\Models\Duty;
 use BackedEnum;
@@ -29,6 +33,11 @@ class DutyResource extends Resource
         return DutyForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return DutyInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return DutiesTable::configure($table);
@@ -37,7 +46,8 @@ class DutyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            MembersRelationManager::class,
+            SlotsRelationManager::class,
         ];
     }
 
@@ -46,6 +56,7 @@ class DutyResource extends Resource
         return [
             'index' => ListDuties::route('/'),
             'create' => CreateDuty::route('/create'),
+            'view' => ViewDuty::route('/{record}'),
             'edit' => EditDuty::route('/{record}/edit'),
         ];
     }

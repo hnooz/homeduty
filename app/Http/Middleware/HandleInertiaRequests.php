@@ -54,6 +54,7 @@ class HandleInertiaRequests extends Middleware
                         'name' => $user->name,
                         'email' => $user->email,
                         'is_group_admin' => $user->hasAnyRole([
+                            HomeDutyRole::SuperAdmin,
                             HomeDutyRole::GroupOwner,
                             HomeDutyRole::GroupAdmin,
                         ]),

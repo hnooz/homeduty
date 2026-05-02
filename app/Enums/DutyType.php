@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum DutyType: string
+use Filament\Support\Contracts\HasLabel;
+
+enum DutyType: string implements HasLabel
 {
     case Cooking = 'cooking';
     case Cleaning = 'cleaning';
@@ -13,6 +15,11 @@ enum DutyType: string
             self::Cooking => 'Cooking',
             self::Cleaning => 'Cleaning',
         };
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 
     public function icon(): string

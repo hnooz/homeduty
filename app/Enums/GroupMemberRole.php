@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum GroupMemberRole: string
+use Filament\Support\Contracts\HasLabel;
+
+enum GroupMemberRole: string implements HasLabel
 {
     case Admin = 'admin';
     case Member = 'member';
@@ -13,6 +15,11 @@ enum GroupMemberRole: string
             self::Admin => 'Admin',
             self::Member => 'Member',
         };
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 
     public function toHomeDutyRole(): HomeDutyRole

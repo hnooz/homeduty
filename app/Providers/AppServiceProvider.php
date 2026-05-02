@@ -2,13 +2,16 @@
 
 namespace App\Providers;
 
+use App\Enums\HomeDutyRole;
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\Roles\SyncHomeDutyAuthorization;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -30,9 +33,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureAuthorization();
         $this->configureRateLimiting();
         $this->syncAuthorization();
         $this->applyEmailSettings();
+    }
+
+    protected function configureAuthorization(): void
+    {
+        Gate::before(function (User $user, string $ability): ?bool {
+            return $user->hasRole(HomeDutyRole::SuperAdmin->value) ? true : null;
+        });
     }
 
     /**
